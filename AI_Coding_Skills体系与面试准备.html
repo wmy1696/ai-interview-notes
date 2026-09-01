@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>后端 AI Coding Skills 体系与面试准备</title>
+  <style>
+    :root{--bg:#f4f2ec;--paper:#fffefa;--ink:#1c2522;--muted:#66716c;--line:#d9ddd7;--brand:#0e6659;--brand2:#164a44;--soft:#e4f2ee;--accent:#d46038;--accentsoft:#fff0e9;--blue:#335f8a;--bluesoft:#eaf2f9;--code:#162522;--shadow:0 14px 38px rgba(26,51,45,.08)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 92% 5%,rgba(212,96,56,.10),transparent 28rem),radial-gradient(circle at 8% 30%,rgba(14,102,89,.10),transparent 26rem),var(--bg);color:var(--ink);font:16px/1.78 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+    a{color:var(--brand);text-underline-offset:3px}.layout{display:grid;grid-template-columns:285px minmax(0,980px);gap:46px;max-width:1340px;margin:auto;padding:28px 28px 80px}.side{position:sticky;top:18px;align-self:start;max-height:calc(100vh - 36px);overflow:auto;padding:20px;border:1px solid var(--line);border-radius:18px;background:rgba(255,254,250,.92);backdrop-filter:blur(12px);box-shadow:var(--shadow)}.side strong{display:block;margin:0 8px 10px;color:var(--brand);font-size:13px;letter-spacing:.12em}.side a{display:block;padding:6px 9px;border-radius:8px;text-decoration:none;color:#35413d;font-size:13px}.side a:hover{background:var(--soft);color:var(--brand)}main{min-width:0}
+    .hero{position:relative;overflow:hidden;padding:54px 50px;border-radius:28px;background:linear-gradient(135deg,#123d38,#0e6659 65%,#278273);color:white;box-shadow:var(--shadow)}.hero:after{content:"";position:absolute;width:280px;height:280px;right:-80px;bottom:-150px;border:48px solid rgba(255,255,255,.08);border-radius:50%}.eyebrow{font-size:12px;letter-spacing:.15em;text-transform:uppercase;color:#bde5db;font-weight:750}.hero h1{position:relative;margin:12px 0 18px;max-width:800px;font-size:clamp(35px,5.3vw,60px);line-height:1.12;letter-spacing:-.045em}.hero p{position:relative;max-width:780px;margin:0;color:#e8f7f3;font-size:18px}.meta{display:flex;position:relative;flex-wrap:wrap;gap:9px;margin-top:28px}.meta span{padding:5px 11px;border:1px solid rgba(255,255,255,.25);border-radius:99px;font-size:12px}
+    section{margin-top:34px;padding:38px 42px;border:1px solid var(--line);border-radius:22px;background:var(--paper);box-shadow:0 8px 25px rgba(26,51,45,.04)}h2{margin:0 0 18px;color:var(--brand2);font-size:29px;line-height:1.3;letter-spacing:-.025em}h3{margin:30px 0 9px;font-size:21px;line-height:1.4}h4{margin:22px 0 6px;font-size:17px}.lead{font-size:18px;color:#34443f}p{margin:10px 0}ul,ol{padding-left:1.35em}li{margin:6px 0}strong{font-weight:720}code{padding:.12em .4em;border-radius:5px;background:#ebeee9;color:#9c3f20;font: .91em ui-monospace,SFMono-Regular,Menlo,monospace}pre{overflow:auto;padding:20px;border-radius:14px;background:var(--code);color:#e6f2ee;line-height:1.55}pre code{padding:0;background:none;color:inherit}blockquote{margin:21px 0;padding:15px 20px;border-left:4px solid var(--accent);border-radius:0 12px 12px 0;background:var(--accentsoft)}blockquote p{margin:0;font-weight:680}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px;margin:18px 0}.grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.card{padding:18px;border:1px solid var(--line);border-radius:14px;background:#fff}.card b{display:block;margin-bottom:5px;color:var(--brand)}.callout{margin:18px 0;padding:17px 20px;border:1px solid #bdddd4;border-radius:14px;background:var(--soft)}.callout.warn{border-color:#efd1c5;background:var(--accentsoft)}.callout.blue{border-color:#c8d9e9;background:var(--bluesoft)}.flow{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin:20px 0}.flow span{padding:8px 12px;border-radius:999px;background:var(--soft);color:var(--brand);font-weight:720}.flow i{font-style:normal;color:var(--muted)}table{width:100%;margin:17px 0;border-collapse:collapse;font-size:14px}th,td{padding:10px 11px;border:1px solid var(--line);text-align:left;vertical-align:top}th{background:#ecefe9;color:#31413c}.tag{display:inline-block;padding:2px 7px;border-radius:99px;background:var(--soft);color:var(--brand);font-size:12px;font-weight:700}.tag.user{background:var(--accentsoft);color:#9a4528}.tag.beta{background:var(--bluesoft);color:var(--blue)}.answer{margin:15px 0;padding:18px 20px;border-radius:14px;background:#f4f7f4;border-left:4px solid var(--brand)}.answer:before{content:"示范回答";display:block;margin-bottom:5px;color:var(--brand);font-size:12px;font-weight:800;letter-spacing:.08em}.bad{color:#9a4528}.good{color:var(--brand)}details{margin:11px 0;padding:12px 16px;border:1px solid var(--line);border-radius:12px;background:#fff}summary{cursor:pointer;color:var(--brand);font-weight:720}.check{list-style:none;padding:0}.check li{position:relative;padding-left:28px}.check li:before{content:"✓";position:absolute;left:0;color:var(--brand);font-weight:900}.number{display:inline-grid;place-items:center;width:27px;height:27px;margin-right:7px;border-radius:50%;background:var(--brand);color:#fff;font-size:13px}.footer{text-align:center;margin:28px;color:var(--muted);font-size:12px}
+    @media(max-width:940px){.layout{display:block;padding:14px}.side{position:static;max-height:none;margin-bottom:18px}.side nav{columns:2}.hero{padding:36px 26px;border-radius:20px}section{padding:28px 23px}.grid,.grid.three{grid-template-columns:1fr}}
+    @media print{body{background:#fff}.layout{display:block;max-width:none;padding:0}.side{display:none}.hero,section{box-shadow:none;break-inside:auto}section{border-color:#bbb}.answer,.card,table{break-inside:avoid}}
+  </style>
+</head>
+<body>
+<div class="layout">
+  <aside class="side">
+    <strong>面试准备目录</strong>
+    <nav>
+      <a href="#readme">01 · 先给结论</a>
+      <a href="#project">02 · 项目完整画像</a>
+      <a href="#system">03 · 六层工程体系</a>
+      <a href="#flow">04 · PD 给 PRD 后怎么跑</a>
+      <a href="#principles">05 · 底层设计原则</a>
+      <a href="#skills">06 · 全部 Skill 清单</a>
+      <a href="#evolution">07 · 与课程笔记的对应</a>
+      <a href="#interview">08 · 面试介绍稿</a>
+      <a href="#case">09 · 项目案例讲法</a>
+      <a href="#questions">10 · 高频追问与回答</a>
+      <a href="#pitfalls">11 · 容易讲错的地方</a>
+      <a href="#evidence">12 · 面试前证据准备</a>
+      <a href="#quick">13 · 一页速记</a>
+    </nav>
+  </aside>
+
+  <main>
+    <header class="hero">
+      <div class="eyebrow">Internet R&amp;D Engineer · AI Coding Interview</div>
+      <h1>后端 AI Coding Skills 体系<br>与研发工程师面试准备</h1>
+      <p>基于 mattpocock/skills 完整仓库、37 个 Skill、项目调用规范，以及配套课程笔记整理，并按“PD 提供 PRD，后端负责技术落地”的真实工作方式重新组织。</p>
+      <div class="meta"><span>仓库版本 1.2.3</span><span>37 个 SKILL.md</span><span>25 个正式发布 Skill</span><span>面试话术 + 追问 + STAR 案例</span></div>
+    </header>
+
+    <section id="readme">
+      <h2>01 · 先给结论：面试时你应该怎么定义它</h2>
+      <p class="lead">这不是让 AI 从零做产品的“提示词合集”，而是后端工程师把 PD 的 PRD 转换成可实现、可验证交付物的一套轻量编排体系。</p>
+      <blockquote><p>它解决的核心问题不是让 AI 多写代码，而是降低 AI 研发中的需求偏差、上下文退化、验证不足、架构熵增和无人值守风险。</p></blockquote>
+      <p>你在面试中可以用下面四句话定调：</p>
+      <ol>
+        <li>我把 AI 当作<strong>能执行工具的非确定性工程代理</strong>，不是代码补全器。</li>
+        <li>收到 PRD 后，我通过 Skill 完成需求与代码对齐、信息缺口分流、工程规格化、纵向切片、实现和审查。</li>
+        <li>每个阶段都有输入、完成标准和持久化产物，关键正确性尽量由测试和工具反馈，而不是靠 Prompt 信任。</li>
+        <li>人负责目标、领域语言、架构和产品判断；Agent 负责探索、实现、重复验证和可委派工作。</li>
+      </ol>
+      <div class="callout"><strong>最重要的面试转换：</strong>不要说“PD 给我 PRD，我就让 AI 生成代码”。要说“我借鉴并改造了这套 Skill，把 PRD 审核、业务决策回收、工程 Spec、任务分解、TDD 和 Review 固化为可重复的后端研发工作流”。</div>
+    </section>
+
+    <section id="project">
+      <h2>02 · 项目完整画像：它到底是什么</h2>
+      <p>仓库定位是 <em>Skills for Real Engineers</em>。作者明确反对由一个大框架接管全部流程，更倾向于<strong>小型、可组合、可修改、模型无关</strong>的 Skill。官方 README 将主要失败模式归纳为：需求不一致、语言不一致、代码不可验证，以及 AI 加速软件熵。</p>
+      <h3>2.1 仓库不是只有 SKILL.md</h3>
+      <table>
+        <thead><tr><th>组成</th><th>作用</th><th>工程含义</th></tr></thead>
+        <tbody>
+          <tr><td><code>skills/engineering</code></td><td>正式工程 Skill</td><td>日常研发主流程与质量纪律</td></tr>
+          <tr><td><code>skills/productivity</code></td><td>正式通用 Skill</td><td>访谈、交接、教学、问卷、Agent 文档写作</td></tr>
+          <tr><td><code>skills/in-progress</code></td><td>公开 beta</td><td>验证新流程，但不进入正式插件</td></tr>
+          <tr><td><code>skills/misc</code></td><td>低频保留</td><td>具体迁移、Git 防护、pre-commit 等工具型能力</td></tr>
+          <tr><td><code>.claude-plugin/plugin.json</code></td><td>正式发布清单</td><td>插件只发布 promoted buckets，当前 25 个</td></tr>
+          <tr><td><code>docs/</code></td><td>人类阅读页面</td><td>每个正式 Skill 有面向用户的使用说明</td></tr>
+          <tr><td><code>.agents/</code></td><td>维护规范、ADR、调用规则</td><td>Skill 本身也被当作需要治理的软件产品</td></tr>
+          <tr><td><code>CONTEXT.md</code></td><td>仓库领域词汇</td><td>确保 Issue、ticket、triage role 等术语一致</td></tr>
+        </tbody>
+      </table>
+      <h3>2.2 两种调用模型</h3>
+      <div class="grid">
+        <div class="card"><b><span class="tag user">User-invoked</span> 用户显式调用</b>负责高层编排和带有人类意图的流程，如 <code>grill-with-docs</code>、<code>to-spec</code>、<code>implement</code>。它不占模型的自动发现上下文，但人要记得调用。</div>
+        <div class="card"><b><span class="tag">Model-invoked</span> 模型可自动发现</b>负责可复用纪律和参考知识，如 <code>tdd</code>、<code>code-review</code>、<code>research</code>、<code>codebase-design</code>。描述是常驻的 context pointer。</div>
+      </div>
+      <p>用户 Skill 可以显式调用模型 Skill，但不能调用另一个用户 Skill。这样做既保持人对高层流程的控制，又让 Agent 在实现过程中自动调用通用纪律。</p>
+      <h3>2.3 Router Skill</h3>
+      <p><code>ask-matt</code> 是路由器。随着用户 Skill 增多，人类的认知负担会上升，因此只记住一个入口，由它说明该走哪条流程。它不能替人调用其他 user-invoked Skill，只能给出路线。</p>
+    </section>
+
+    <section id="system">
+      <h2>03 · 把 37 个 Skill 讲成六层工程体系</h2>
+      <div class="grid three">
+        <div class="card"><b>1. PRD 与现有系统对齐</b><code>grilling</code><br><code>grill-with-docs</code><br><code>domain-modeling</code></div>
+        <div class="card"><b>2. 规格与任务图</b><code>to-spec</code><br><code>to-tickets</code><br><code>wayfinder</code></div>
+        <div class="card"><b>3. 信息缺口分流</b><code>research</code><br><code>prototype</code><br><code>to-questionnaire</code></div>
+        <div class="card"><b>4. 实现与反馈循环</b><code>implement</code><br><code>tdd</code><br><code>diagnosing-bugs</code></div>
+        <div class="card"><b>5. 审查与架构治理</b><code>code-review</code><br><code>codebase-design</code><br><code>improve-codebase-architecture</code></div>
+        <div class="card"><b>6. 协作与运行治理</b><code>triage</code><br><code>handoff</code><br><code>wizard</code><br><code>setup-*</code></div>
+      </div>
+      <h3>3.1 每一层对应一个失败模式</h3>
+      <table>
+        <thead><tr><th>失败模式</th><th>Skill 机制</th><th>可观测结果</th></tr></thead>
+        <tbody>
+          <tr><td>AI 把 PRD 表面文字当成完整需求</td><td>结合代码库建立设计树，逐轮推进 frontier</td><td>隐藏边界被暴露，工程事实与业务决定分开处理</td></tr>
+          <tr><td>后端替业务方做了不该做的决定</td><td><code>to-questionnaire</code> 把问题交给真正的 owner</td><td>关键业务规则有明确来源，不由 AI 或开发猜测</td></tr>
+          <tr><td>不同会话用词混乱</td><td><code>CONTEXT.md</code> 统一领域语言，ADR 记录难逆决定</td><td>Issue、代码命名和测试使用同一术语</td></tr>
+          <tr><td>大任务把上下文撑爆</td><td>Spec → tracer-bullet tickets → blocking graph</td><td>每个 Issue 可在新上下文独立完成</td></tr>
+          <tr><td>AI 写完才发现不能运行</td><td>预先约定 seam，Red → Green 逐切片实现</td><td>每次循环都有失败/通过信号</td></tr>
+          <tr><td>代码符合规范但做错需求</td><td>Standards / Spec 双轴并行 Review</td><td>两个维度分开报告，互不遮蔽</td></tr>
+          <tr><td>AI 快速制造泥球架构</td><td>Deep module、interface、seam、locality</td><td>更小接口、更强测试边界、更少散落修改</td></tr>
+          <tr><td>Agent 无法做人工步骤</td><td>Wizard 把人工流程产品化</td><td>可复现脚本、确认门、secret 安全写入</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="flow">
+      <h2>04 · 我的真实场景：PD 给 PRD 后，后端怎么跑</h2>
+      <p><strong>工作入口不是“我有一个想法”，而是“PD 已经提交 PRD”。</strong>因此不需要让 AI 从零发明需求，而是让它把 PRD、现有代码和技术约束对齐，再把业务文档转成可实现、可测试、可验收的工程规格。</p>
+      <div class="flow"><span>PD 的 PRD</span><i>→</i><span>grill-with-docs</span><i>→</i><span>补齐未决问题</span><i>→</i><span>to-spec</span><i>→</i><span>to-tickets</span><i>→</i><span>逐个 implement</span><i>→</i><span>TDD + Review</span><i>→</i><span>PR</span></div>
+      <div class="note"><strong>这仍然不是机械流水线。</strong><br>小改动可以跳过 <code>to-spec</code> 和 <code>to-tickets</code>；复杂业务功能才走完整链路。<code>to-questionnaire</code>、<code>research</code>、<code>prototype</code> 和 ADR 都是遇到对应阻塞时插入的分支，不是固定关卡。</div>
+
+      <h3><span class="number">0</span> 项目级准备：通常只做一次</h3>
+      <p><code>setup-matt-pocock-skills</code> 用来探索仓库并配置 Issue tracker、triage label、CONTEXT 和 ADR 布局。它属于项目初始化，不是每收到一份 PRD 都重新运行。</p>
+
+      <h3><span class="number">1</span> 收到 PRD：先做 grill-with-docs</h3>
+      <p>把 PRD 作为输入，显式调用 <code>grill-with-docs</code>。它一边阅读 PRD，一边探索现有代码、数据模型、接口和测试，把三件事对齐：<strong>业务想要什么、系统现在是什么样、两者之间还缺哪些决定。</strong></p>
+      <p>例如 PRD 只写“用户可以取消订单”，Agent 应继续暴露：哪些状态允许取消、退款和库存如何联动、重复取消怎么处理、退款失败怎么办、老客户端是否兼容。此时产物是“已确认事项 + 待确认事项”，还不是直接生成代码。</p>
+
+      <h3><span class="number">2</span> 未决问题分流：答案到底在哪里</h3>
+      <ul>
+        <li><strong>代码能回答：</strong>例如订单表结构、现有幂等机制、错误码规范——让 Agent 继续查仓库，不要拿工程事实打扰 PD。</li>
+        <li><strong>PD 或业务 owner 才能决定：</strong>例如哪些状态允许取消、优惠券是否退回、客服能否强制操作——问题少就直接沟通，问题多且适合异步确认时，显式调用 <code>to-questionnaire</code>。</li>
+        <li><strong>官方资料能回答：</strong>例如支付回调是否重试、SDK 限流规则——调用 <code>research</code> 查官方文档、源码和协议。</li>
+        <li><strong>必须实验才知道：</strong>例如 SDK 与当前框架是否兼容、消息顺序是否满足要求——调用 <code>prototype</code> 做只回答一个问题的最小技术探针。</li>
+      </ul>
+      <div class="note"><strong>to-questionnaire 的准确位置：</strong><br><code>grill-with-docs</code> 进行到一半，发现关键答案只在别人脑中，这时暂停并生成一份给单个接收人的 Markdown 问卷。它不会替你发送消息。答案回来后，把回答带回原会话，继续 grilling，或者进入 <code>to-spec</code>。</div>
+
+      <h3><span class="number">3</span> 需求补齐后：用 to-spec 转成工程规格</h3>
+      <p><code>to-spec</code> 不重复访谈，而是综合 PRD、讨论结论和代码探索结果。PRD 主要回答“业务为什么做、用户要什么”；工程 Spec 进一步固定状态转换、接口行为、幂等语义、事务与一致性、兼容策略、异常处理、监控告警、测试决定和范围外事项。</p>
+      <p>如果只是边界非常明确的小接口改动，可以不写完整 Spec，直接进入 <code>implement</code>；如果涉及跨模块、跨团队或复杂状态机，应该保留 Spec 作为共同验收契约。</p>
+
+      <h3><span class="number">4</span> 出现重大技术取舍时：补充 ADR</h3>
+      <p>ADR 不是每个需求都写。只有决定难以逆转、存在真实取舍、以后脱离上下文会让人困惑时才记录。例如“订单取消采用本地事务 + Outbox，而不是分布式事务”。普通字段或接口修改不需要 ADR。</p>
+
+      <h3><span class="number">5</span> 复杂需求：用 to-tickets 转成任务图</h3>
+      <p><code>to-tickets</code> 不应机械拆成“建表、DAO、Service、Controller”，而应拆成可独立验证的端到端 tracer bullet，例如“待支付订单取消”“已支付订单取消并退款”“退款失败补偿”。每个 Issue 声明真实的 blocking edges，并尽量能在一个全新上下文内完成。</p>
+      <p>对无法纵向切分的 wide refactor，采用 <strong>expand → migrate batches → contract</strong>，保持每批 CI 可绿。</p>
+
+      <h3><span class="number">6</span> 实现</h3>
+      <p>从当前没有阻塞的 Issue 中选择一个，在相对干净的新上下文中运行 <code>implement</code>。它重新读取 Issue、Spec 和相关代码，在预先确认的 seam 上调用 <code>tdd</code>，经常运行单测和类型检查，最后运行全量测试。</p>
+
+      <h3><span class="number">7</span> 双轴审查</h3>
+      <p><code>code-review</code> 固定 merge-base 后并行启动两个审查 Agent：</p>
+      <ul>
+        <li><strong>Standards：</strong>仓库规范 + Fowler code smell baseline；</li>
+        <li><strong>Spec：</strong>遗漏、部分实现、范围膨胀和行为错误。</li>
+      </ul>
+      <p>两个报告不合并排序。因为“写得规范但需求错了”和“需求实现了但破坏规范”是不同风险。问题修复、测试通过后，再提交 PR 进入团队正常评审流程。</p>
+
+      <h3>4.1 按需求大小选择最短闭环</h3>
+      <table>
+        <thead><tr><th>任务类型</th><th>建议路线</th><th>使用说明</th></tr></thead>
+        <tbody>
+          <tr><td>小 Bug</td><td><code>diagnosing-bugs → tdd → code-review</code></td><td>先建立精确复现和根因证据，再用回归测试锁住修复；不需要补完整 Spec。</td></tr>
+          <tr><td>明确的小接口</td><td><code>grill-with-docs → implement → tdd → code-review</code></td><td>快速核对 PRD 与现有接口约束，边界清楚就直接进入短实现闭环。</td></tr>
+          <tr><td>复杂业务功能</td><td><code>grill-with-docs → to-spec → to-tickets → implement → tdd → code-review</code></td><td>先形成共同工程契约，再拆成带依赖、可独立验证的端到端 Issues。</td></tr>
+          <tr><td>外部系统接入</td><td><code>research / prototype → to-spec 或 implement</code></td><td>官方资料能回答就 research；必须运行才能知道就 prototype。复杂接入形成 Spec，简单接入可直接实现。</td></tr>
+          <tr><td>业务规则需要别人确认</td><td><code>在 grilling 中途插入 to-questionnaire</code></td><td>答案在 PD、业务专家或上下游 owner 脑中时使用；回答回来后继续 grilling 或进入 <code>to-spec</code>。</td></tr>
+        </tbody>
+      </table>
+      <p><strong>路由原则：</strong>不是看哪个 Skill 功能最强，而是看当前任务被什么阻塞。能走短闭环就不机械执行全套流程；只有复杂度和风险值得时，才增加 Spec、Issues、原型或异步问卷。</p>
+
+      <div class="note"><strong>面试口语版：</strong><br>“PD 给我 PRD 后，我不会直接让 AI 写代码。我先让它结合 PRD 和现有代码做 grilling。代码能回答的问题让 AI 自己查，业务规则不清楚的再找 PD，问题多时用 to-questionnaire 生成结构化问卷。需求补齐后，用 to-spec 转成工程规格，复杂需求再用 to-tickets 拆成端到端 Issue，最后逐个 implement，并通过 TDD 和双轴 code review 建立反馈闭环。”</div>
+    </section>
+
+    <section id="principles">
+      <h2>05 · 真正值得面试讲的底层原则</h2>
+      <h3>5.1 Context pointer 与渐进披露</h3>
+      <p>Skill description、AGENTS.md 中的一行链接，本质都是 context pointer：它描述外部材料是什么，以及什么条件下应该读取。指针措辞决定调用可靠性。</p>
+      <div class="grid">
+        <div class="card"><b>Context load</b>始终在模型上下文里的成本，例如 model-invoked Skill 的 description、全局 AGENTS 指令。</div>
+        <div class="card"><b>Cognitive load</b>人要记得哪些 Skill 存在、什么时候调用的成本。user-invoked Skill 把成本放在人身上。</div>
+      </div>
+      <p>因此不是所有内容都放 AGENTS.md，也不是所有内容都拆 Skill。应把所有分支都需要的步骤内联，把仅某些分支需要的参考材料放到指针之后。</p>
+      <h3>5.2 单一事实源与防沉积</h3>
+      <p>环境本身也是事实源。package scripts、目录结构、CLI help 可以直接查，就不应重复写进文档。只缓存“环境无法表达的东西”：团队约定、选择理由、特殊陷阱。否则文档会形成过时 sediment。</p>
+      <h3>5.3 Leading words</h3>
+      <p>使用模型预训练中已有的高密度词汇来锚定行为，例如 <em>tracer bullet</em>、<em>frontier</em>、<em>fog of war</em>、<em>tight loop</em>、<em>deep module</em>。它们比重复一长串解释更稳定、更省上下文。</p>
+      <h3>5.4 Completion criteria</h3>
+      <p>每个步骤应有可检查且足够严格的完成条件。比如调试第一阶段不是“理解问题”，而是“已经运行过一个能对用户精确症状变红、快速、稳定、可无人运行的命令”。</p>
+      <h3>5.5 Seam 是测试与架构的连接点</h3>
+      <p>Seam 是可替换行为的位置，测试从公共接口穿过 seam 观察行为。测试前先和人确认哪些 seam 值得测试，优先选择最高层、最少数量的 seam。接口设计不好时，先调用 <code>codebase-design</code>，而不是写一堆内部耦合测试。</p>
+      <h3>5.6 人机边界</h3>
+      <p>事实检索是 Agent 的工作；目标选择、产品品味、领域定义、架构权衡是人的工作。Skill 的价值就是把这条边界变成明确流程。</p>
+    </section>
+
+    <section id="skills">
+      <h2>06 · 全部 Skill 清单：面试不必背，但要知道放在哪层</h2>
+      <h3>6.1 正式发布：Engineering（18 个）</h3>
+      <table>
+        <thead><tr><th>Skill</th><th>调用</th><th>一句话定位</th></tr></thead>
+        <tbody>
+          <tr><td>ask-matt</td><td><span class="tag user">User</span></td><td>整个 Skill 集的人工路由器</td></tr>
+          <tr><td>grill-with-docs</td><td><span class="tag user">User</span></td><td>访谈同时沉淀领域词汇和 ADR</td></tr>
+          <tr><td>triage</td><td><span class="tag user">User</span></td><td>把外部 Issue/PR 放进可委派状态机</td></tr>
+          <tr><td>improve-codebase-architecture</td><td><span class="tag user">User</span></td><td>扫描 deepening opportunities，生成可视报告</td></tr>
+          <tr><td>setup-matt-pocock-skills</td><td><span class="tag user">User</span></td><td>配置 Issue tracker、标签和领域文档</td></tr>
+          <tr><td>to-spec</td><td><span class="tag user">User</span></td><td>把已完成讨论综合成正式规格</td></tr>
+          <tr><td>to-tickets</td><td><span class="tag user">User</span></td><td>按纵向切片构建带依赖的任务图</td></tr>
+          <tr><td>implement</td><td><span class="tag user">User</span></td><td>TDD 实现、验证、Review、提交</td></tr>
+          <tr><td>wayfinder</td><td><span class="tag user">User</span></td><td>为超大、模糊工作建立 decision-ticket 地图</td></tr>
+          <tr><td>prototype</td><td><span class="tag">Model</span></td><td>以低成本可运行物回答一个设计问题</td></tr>
+          <tr><td>diagnosing-bugs</td><td><span class="tag">Model</span></td><td>先建立红色反馈，再最小化、假设和修复</td></tr>
+          <tr><td>research</td><td><span class="tag">Model</span></td><td>后台检索一手资料并落地引用文档</td></tr>
+          <tr><td>tdd</td><td><span class="tag">Model</span></td><td>在确认 seam 上逐个 Red → Green</td></tr>
+          <tr><td>domain-modeling</td><td><span class="tag">Model</span></td><td>统一领域语言，只把 glossary 写进 CONTEXT</td></tr>
+          <tr><td>codebase-design</td><td><span class="tag">Model</span></td><td>deep module / interface / seam 设计词汇</td></tr>
+          <tr><td>code-review</td><td><span class="tag">Model</span></td><td>Standards 与 Spec 双轴并行审查</td></tr>
+          <tr><td>resolving-merge-conflicts</td><td><span class="tag">Model</span></td><td>按双方原始意图逐 hunk 解冲突</td></tr>
+          <tr><td>wizard</td><td><span class="tag">Model</span></td><td>把必须由人完成的外部操作做成向导脚本</td></tr>
+        </tbody>
+      </table>
+      <h3>6.2 正式发布：Productivity（7 个）</h3>
+      <table>
+        <tbody>
+          <tr><td>grill-me</td><td><span class="tag user">User</span></td><td>无仓库场景的无状态深度访谈</td></tr>
+          <tr><td>handoff</td><td><span class="tag user">User</span></td><td>生成跨目录、跨 Agent、跨同事的可移交上下文</td></tr>
+          <tr><td>teach</td><td><span class="tag user">User</span></td><td>把工作区变成跨会话学习系统</td></tr>
+          <tr><td>to-questionnaire</td><td><span class="tag user">User</span></td><td>向真正掌握信息的人异步收集事实与决策</td></tr>
+          <tr><td>wait-what</td><td><span class="tag user">User</span></td><td>用简明英语和领域语言重讲没听懂的内容</td></tr>
+          <tr><td>grilling</td><td><span class="tag">Model</span></td><td>设计树 + frontier 的通用访谈原语</td></tr>
+          <tr><td>writing-for-agents</td><td><span class="tag">Model</span></td><td>Agent 文档的指针、层级、完成标准和裁剪方法</td></tr>
+        </tbody>
+      </table>
+      <h3>6.3 非正式发布：12 个</h3>
+      <p><span class="tag beta">In progress</span> <code>claude-handoff</code>、<code>implement-spec</code>、<code>loop-me</code>、<code>retro</code>、<code>setup-ts-deep-modules</code>、<code>writing-beats</code>、<code>writing-fragments</code>、<code>writing-shape</code>。</p>
+      <p><span class="tag beta">Misc</span> <code>git-guardrails-claude-code</code>、<code>migrate-to-shoehorn</code>、<code>scaffold-exercises</code>、<code>setup-pre-commit</code>。</p>
+      <p>这部分也说明作者对 Skill 有生命周期管理：beta 公开收反馈，低频能力不进入插件；正式 Skill 才要求 README、docs 页面和 manifest 同步。</p>
+    </section>
+
+    <section id="evolution">
+      <h2>07 · 与上一份课程笔记的对应：这套体系怎么演进了</h2>
+      <p>配套笔记 <a href="AI_Agent_工程化课程中文笔记.html">《AI Agent 工程化开发》</a> 讲的是方法基础；当前仓库展示了这些方法被进一步产品化后的形态。</p>
+      <table>
+        <thead><tr><th>课程阶段概念</th><th>当前仓库中的实现</th><th>演进点</th></tr></thead>
+        <tbody>
+          <tr><td>Plan → Execute → Clear</td><td>PRD → grill → spec → tickets → 每 ticket 新上下文</td><td>从单会话节奏升级为可持久化任务图</td></tr>
+          <tr><td>PD 的 PRD + PLAN.md</td><td>工程 Spec + blocking Issues</td><td>保留业务源文档，同时把技术落地升级为可并行 frontier</td></tr>
+          <tr><td>Tracer Bullet</td><td>to-tickets 的硬性 vertical-slice 规则</td><td>成为任务分解的默认算法</td></tr>
+          <tr><td>Do Work Skill</td><td>implement → tdd → code-review → commit</td><td>实现流程拆成组合式纪律</td></tr>
+          <tr><td>Ralph / Backlog</td><td>triage state machine、ready-for-agent、beta implement-spec</td><td>从简单循环升级为任务可领取、可并行的工作系统</td></tr>
+          <tr><td>AGENTS / Skills</td><td>context pointer、两种 invocation、router</td><td>从渐进披露上升为明确的信息架构</td></tr>
+          <tr><td>研究与原型</td><td>background research + prototype primary source</td><td>强调引用、分支保存和实施 Issue 指针</td></tr>
+          <tr><td>Deep Modules</td><td>codebase-design 统一 vocabulary</td><td>架构语言成为 TDD 和 Review 的共享基础</td></tr>
+        </tbody>
+      </table>
+      <div class="callout blue"><strong>面试亮点：</strong>你可以说自己不是照抄固定流程，而是理解了从“单 Agent 会话管理”到“基于 Issue 图和领域文档的多会话研发系统”的演进。</div>
+    </section>
+
+    <section id="interview">
+      <h2>08 · 面试介绍稿：30 秒、1 分钟、3 分钟</h2>
+      <h3>8.1 30 秒电梯版本</h3>
+      <div class="answer">我不是把 AI 当代码补全，而是用一套可组合的 Agent Skills 管理后端研发流程。PD 给出 PRD 后，我先让 Agent 结合现有代码做结构化需求对齐：工程事实由 AI 自己查，业务规则回到 PD 确认；再形成工程 Spec，并拆成带依赖的端到端 Issues。每个 Issue 在独立上下文里用 TDD 实现，最后按代码规范和需求符合度做双轴 Review。这样既提升了交付效率，也把需求偏差、上下文退化、验证不足和架构熵增控制在可观测范围内。</div>
+      <h3>8.2 1 分钟标准版本</h3>
+      <div class="answer">我使用 Matt Pocock 这套 Skills，但会按后端研发场景裁剪。入口通常是 PD 的 PRD：我先用 grill-with-docs 让 Agent 同时阅读 PRD 和代码，把需求展开成设计树。表结构、现有接口和幂等机制等工程事实由 Agent 自己查；取消条件、退款口径等业务决定交给 PD，问题多时用 to-questionnaire 生成异步问卷。信息补齐后，用 to-spec 形成工程规格，复杂需求再按 tracer bullet 拆成带 blocking edges 的 Issues。每个 Issue 在新上下文里围绕稳定 seam 做 Red-Green TDD，最后分别检查代码规范和 Spec 符合度。我的目标不是让 AI 一次写对，而是让需求来源明确、错误尽早暴露、交付过程可以恢复。</div>
+      <h3>8.3 3 分钟深度版本</h3>
+      <div class="answer">
+        我是以后端工程师的工作方式来使用这套 Skills。入口一般是 PD 已经提供 PRD。第一步用 grill-with-docs 同时阅读 PRD 和代码库，逐轮展开当前决策 frontier。它不是重新做一遍产品设计，而是检查 PRD 放进现有系统以后还有哪些状态、权限、异常和兼容问题。工程事实由 Agent 查代码；业务问题交给 PD 或真正的 owner，问题较多时用 to-questionnaire 异步回收。项目用 CONTEXT.md 维护领域 glossary，只有难以逆转且存在真实权衡的决定才写 ADR。<br><br>
+        第三层是规划。讨论形成 Spec 后，不按数据库、后端、前端横向拆任务，而按 tracer bullet 拆成端到端 Issue，并显式标注 blocking edges。这样任何没有 blocker 的 Issue 都是当前 frontier，可以并行领取，而且每个 Issue 能在一个新上下文里完成，避免上下文越积越差。<br><br>
+        第四层是实现与验证。测试前先确认公共 seam，在这个 seam 上一个失败测试配一个最小实现，逐个 Red-Green，而不是一次性写完所有测试和代码。难 Bug 则先花主要精力构造能对精确症状变红的 tight loop，之后才做最小复现、3 到 5 个可证伪假设和定向 instrumentation。<br><br>
+        第五层是 Review 和架构治理。Review 拆成 Standards 与 Spec 两个独立维度，避免规范性掩盖需求错误。架构上采用 deep module 的思路，用小接口隐藏复杂实现，把测试放在稳定 seam 上，追求 caller leverage 和维护 locality。<br><br>
+        第六层是运行治理。Issue 通过 triage 状态机区分 needs-info、ready-for-agent、ready-for-human 等状态；需要人工点击、密钥或外部控制台的工作，生成交互式 wizard，而不是让 Agent 猜。整体上，我让 AI 承担吞吐量，让人掌握关键判断，并用代码、测试、Issue 和文档作为跨会话的持久化事实源。
+      </div>
+      <h3>8.4 如果面试官问“这不就是套 Prompt 吗？”</h3>
+      <div class="answer">单个 Skill 的载体确实是 Markdown 指令，但体系不是靠一段 Prompt 工作。它有调用权限、路由、信息层级、Issue 状态机、blocking graph、TDD 反馈、Git diff Review 和持久化领域文档。Prompt 只负责调度行为；正确性仍由测试、类型、代码和人工 QA 提供。对我来说它更接近轻量的 Agent workflow DSL，而不是聊天话术。</div>
+    </section>
+
+    <section id="case">
+      <h2>09 · 项目案例怎么讲：可直接套用的 STAR 模板</h2>
+      <p>下面以“PD 提出订单取消需求”为后端案例。请把业务名称、技术栈、数据和结果替换为你的真实项目，绝对不要虚构指标。</p>
+      <h3>9.1 Situation</h3>
+      <p>PD 提供了一份“支持用户取消订单”的 PRD，但没有完全说明不同订单状态、退款失败、库存回补、优惠券退回、重复请求和上下游回调的处理口径。现有订单系统又已经存在多种状态和异步消息。</p>
+      <h3>9.2 Task</h3>
+      <p>我的任务是把业务 PRD 转成可以落地和验收的后端方案，在不替 PD 猜业务规则的前提下，确保状态流转、幂等、一致性和异常补偿都有明确设计。</p>
+      <h3>9.3 Action</h3>
+      <ol>
+        <li>把 PRD 交给 <code>grill-with-docs</code>，让它结合订单状态机、退款接口、消息和现有测试找出需求缺口。</li>
+        <li>Agent 自己查表结构、幂等组件和错误码；把“哪些状态可取消、优惠券是否退回”等业务决定整理给 PD，问题多时用 <code>to-questionnaire</code>。</li>
+        <li>支付平台行为用 <code>research</code> 查官方资料；SDK 兼容性或消息行为不确定时，用 <code>prototype</code> 做最小技术探针。</li>
+        <li>回答补齐后形成工程 Spec，明确状态转换、接口语义、事务一致性、补偿、监控、测试 seam 和 out of scope。</li>
+        <li>按“待支付取消、已支付取消并退款、退款失败补偿”等 tracer bullet 拆 Issues，并建立真实 blocking edges。</li>
+        <li>每个 Issue 启动新上下文，在确认 seam 上做 Red-Green TDD，持续跑单测和类型检查。</li>
+        <li>结束时运行全量测试，并用 Standards / Spec 两个 Reviewer 检查。</li>
+        <li>人工和 PD 按验收场景做 QA，将新发现转成 Issue，而不是在高负荷旧上下文里继续补丁。</li>
+      </ol>
+      <h3>9.4 Result</h3>
+      <p>只写真实证据，例如：</p>
+      <ul>
+        <li>将一个大需求拆成 X 个可独立验证 Issue，其中 Y 个可并行；</li>
+        <li>新增 X 条集成测试，关键业务路径覆盖到某个公共 seam；</li>
+        <li>Review 发现 X 个需求遗漏和 X 个规范问题；</li>
+        <li>从提交记录看交付时间由 X 天降到 Y 天；</li>
+        <li>上线后某类缺陷或回滚次数下降；</li>
+        <li>如果没有量化数据，就说“实现了什么可复现流程”，不要编百分比。</li>
+      </ul>
+      <h3>9.5 口语化示范</h3>
+      <div class="answer">有一次 PD 给了订单取消的 PRD。我没有直接让 AI 写接口，而是先让它结合 PRD 和现有订单代码做 grilling。它查出了当前状态机、退款链路和幂等机制，同时暴露出几项 PRD 没写清楚的业务规则。我把这些问题交给 PD 确认，而不是让 AI 猜。答案回来后，我整理成工程 Spec，再按待支付取消、已支付退款和失败补偿拆成几个端到端 Issues。实现时每个 Issue 用新上下文，在订单模块公共接口上先写失败测试，再做最小实现，最后分别检查代码规范和 Spec 覆盖。这个过程最有价值的地方，是把业务决定、工程事实和技术验证分开处理，每种错误都能更早暴露。</div>
+      <div class="callout warn"><strong>请准备三个真实案例：</strong>一个新功能、一个难 Bug、一个架构改进。这样面试官无论从交付、调试还是设计追问，你都有事实可讲。</div>
+    </section>
+
+    <section id="questions">
+      <h2>10 · 高频追问与示范回答</h2>
+      <details open><summary>Q1：PD 已经给了 PRD，为什么还要 grilling？</summary><div class="answer">PRD 说明业务目标，但通常不会完整描述它进入现有系统后的所有工程边界。我用 grill-with-docs 同时看 PRD 和代码，检查状态流转、幂等、异常补偿、兼容性和监控。代码事实让 Agent 自己查，业务决定再请 PD 确认，所以 grilling 是需求落地审查，不是推翻 PRD 或重新做产品设计。</div></details>
+      <details><summary>Q2：为什么不用一份超详细 PRD 直接让 AI 做完？</summary><div class="answer">PRD 和工程 Spec 的职责不同。PRD 主要描述业务目标和用户行为；后端还要结合现状确定接口语义、数据变化、一致性、异常和验收方式。大任务一次做完还会产生上下文压力和反馈延迟，所以我先固化工程 Spec，再拆成可单会话完成的 tracer-bullet Issues。</div></details>
+      <details><summary>Q3：后端任务为什么也强调纵向切片？</summary><div class="answer">这里的纵向不是一定穿过前端，而是穿过完成一项后端行为所需的真实层次，例如数据、领域逻辑、接口、消息和测试。“支持待支付订单取消”可以独立验证；“只建表”或“只写 DAO”不能证明业务路径成立。后续切片再在已验证路径上扩展。</div></details>
+      <details><summary>Q4：TDD 会不会拖慢 AI？</summary><div class="answer">AI 的优势正是耐心执行重复验证。TDD 的成本主要是循环次数，但它提供了可执行反馈，减少后期大范围调试。关键不是机械追求覆盖率，而是在预先确认的公共 seam 上逐个行为 Red-Green，避免对内部实现写脆弱测试。</div></details>
+      <details><summary>Q5：你说的 seam 是什么？</summary><div class="answer">Seam 是可以替换行为而无需在调用点修改代码的位置，也是模块公共接口所在的位置。测试从 seam 调用接口并观察外部行为。一个好的 seam 能隐藏复杂实现，让测试在重构后仍然稳定。</div></details>
+      <details><summary>Q6：AI 调试时最容易犯什么错误？</summary><div class="answer">最常见是先看代码就建立单一假设，然后一路验证自己。我的调试流程先构造一个针对精确用户症状的 tight loop，并最小化复现；之后列 3 到 5 个可证伪假设，每次只改一个变量并做定向 instrumentation。修复前把最小复现变成 regression test，再回跑原始场景。</div></details>
+      <details><summary>Q7：如何防止 AI 产生大量低质量代码？</summary><div class="answer">第一是任务小而完整；第二是类型、测试、Lint 和运行结果形成反馈；第三是双轴 Review；第四是持续改进代码库结构。AI 会模仿现有代码，所以代码库本身是最强 Prompt。长期要通过 deep module 提高 locality，减少一次变更散落多个文件。</div></details>
+      <details><summary>Q8：Deep module 和普通 service 有什么不同？</summary><div class="answer">Module 是任何有 interface 和 implementation 的结构，不限定技术形态。深不深看的是接口提供的 leverage，而不是文件大小。一个 deep module 用很小的接口隐藏大量业务复杂度，调用者和测试只需要理解这个接口；一个浅 service 可能只是透传，删除它并不会消除复杂度，只会少一层跳转。</div></details>
+      <details><summary>Q9：为什么 Review 要分 Standards 和 Spec？</summary><div class="answer">因为它们是正交风险。代码可能完全符合规范却实现错需求，也可能功能正确但破坏项目设计。两个 Reviewer 并行还能避免一个维度的上下文影响另一个。最后保留两个报告，不强行合并成一个优先级列表。</div></details>
+      <details><summary>Q10：什么可以交给 AI，什么必须由人做？</summary><div class="answer">表结构、调用链和现有规范等工程事实由 Agent 查；官方协议由 research 查；代码实现和重复测试也适合交给 Agent。业务口径由 PD 或业务 owner 决定，关键架构取舍和最终验收由工程师负责。答案在别人脑中且问题较多时，我用 to-questionnaire 收集，而不是让 AI 代替对方决策。</div></details>
+      <details><summary>Q11：多个 Agent 会话怎么共享上下文？</summary><div class="answer">不靠复制整段聊天，而靠 context pointers 指向持久化事实：Spec、Issue、CONTEXT、ADR、research、prototype branch、commit 和 diff。每个 Issue 是自包含输入，所以实现会话结束后上下文可以丢弃。只有跨目录、跨 harness 或交给同事时才生成 handoff。</div></details>
+      <details><summary>Q12：什么时候 clear、compact、handoff 或 subagent？</summary><div class="answer">同阶段且原始信息仍有价值时继续；下一阶段不需要旧上下文时 clear；需要可移交到新目录、新工具或同事时 handoff；独立且边界清楚的读任务用 subagent；compact 是需要保留大量当前上下文但窗口压力较高时的兜底，不是默认第一选择。</div></details>
+      <details><summary>Q13：如何控制 Agent 的安全风险？</summary><div class="answer">最小权限、敏感信息只通过环境变量、展示输出先脱敏、危险 Git 命令用 hook 阻止、不可逆步骤设置确认门，无人值守执行放进沙箱并设置迭代上限。Git 只负责代码历史，不能替代文件系统、进程和凭证隔离。</div></details>
+      <details><summary>Q14：这套流程有什么缺点？</summary><div class="answer">它增加了前置思考和文档治理成本，小改动全套跑一遍会过度工程；Skill description 和文档也可能过时，形成 context sediment；Agent 自动调用存在概率性，TDD 也可能写出低价值测试。因此我按任务规模裁剪流程，并定期审计 Skills、CONTEXT、ADR 和指针。</div></details>
+      <details><summary>Q15：你有没有改造这套 Skill？</summary><div class="answer">面试前请换成真实内容。推荐从三个方向讲：把真实项目的 typecheck/test/browser 命令写入实现 Skill；加入团队编码规范和 Issue tracker 标签；根据项目领域增加 CONTEXT 词汇、测试 seam 和 Review 规则。重点讲为什么改、改变了什么行为，以及怎样验证有效。</div></details>
+      <details><summary>Q16：如何评价 AI Coding 的 ROI？</summary><div class="answer">我不会只统计生成代码量，而会看 lead time、一次通过率、返工次数、Review 发现的问题类型、测试新增、任务并行度、Agent 等待人工时间和上线缺陷。还要计入研究、Prompt 治理和 QA 成本。只有整体交付周期和质量改善，才是真实 ROI。</div></details>
+      <details><summary>Q17：什么时候使用 to-questionnaire？</summary><div class="answer">当 grilling 暴露的问题不在我或代码库中，而在某一个 PD、业务专家、架构师或上下游负责人脑中时使用。它生成一份给单个接收人的异步 Markdown 问卷，不会自动发送。问题少时直接沟通更高效；多个接收人则分别生成，答案回来后继续 grilling 或进入 to-spec。</div></details>
+    </section>
+
+    <section id="pitfalls">
+      <h2>11 · 面试时容易讲错的地方</h2>
+      <table>
+        <thead><tr><th class="bad">不要这样说</th><th class="good">改成这样说</th></tr></thead>
+        <tbody>
+          <tr><td>“装了 Skill，AI 就能自己开发。”</td><td>Skill 提高流程一致性，正确性仍由反馈循环、权限边界和 QA 保证。</td></tr>
+          <tr><td>“AI 写代码比人快很多。”</td><td>AI 提升实现吞吐，但可能加速熵增，因此我把重点放在切片、测试和架构治理。</td></tr>
+          <tr><td>“TDD 能保证没有 Bug。”</td><td>TDD 给关键 seam 提供可执行回归信号，不能覆盖产品体验和未建模风险。</td></tr>
+          <tr><td>“我会 37 个 Skill。”</td><td>我把它们归纳为六层系统，并按任务规模选择最小必要流程。</td></tr>
+          <tr><td>“Prompt 写得越详细越好。”</td><td>过长上下文会稀释注意力；稳定信息落到正确事实源，按需渐进披露。</td></tr>
+          <tr><td>“有 Git 就安全。”</td><td>Git 保护历史；hook、最小权限和沙箱控制影响范围。</td></tr>
+          <tr><td>“这些指标提升了 50%。”</td><td>只给可证明的数据，并说明测量口径；没有数据就给提交、测试和 Issue 证据。</td></tr>
+        </tbody>
+      </table>
+      <h3>11.1 不要把别人的方法包装成自己的发明</h3>
+      <p>诚实说你基于开源 Skill 学习和改造，明确指出借鉴了 Tracer Bullet、TDD、DDD ubiquitous language、Fowler smells 和 Ousterhout deep module。你的价值在于<strong>理解、落地、验证和适配</strong>。</p>
+      <h3>11.2 不要只讲工具，不讲业务结果</h3>
+      <p>面试官真正关心的是：需求有没有更准、交付有没有更快、质量有没有变好、团队能否复用、出问题能否恢复。Skill 名称只是支撑材料。</p>
+    </section>
+
+    <section id="evidence">
+      <h2>12 · 面试前请准备这些真实证据</h2>
+      <ul class="check">
+        <li>一张你真实使用的完整流程图，并说明哪些步骤被裁剪过；</li>
+        <li>一组真实材料：PD 原始 PRD、grilling 暴露的问题、确认后的工程 Spec；</li>
+        <li>一次业务问题分流记录：哪些由 Agent 查代码，哪些通过 <code>to-questionnaire</code> 或会议交给 PD；</li>
+        <li>一组按 vertical slices 拆开的 Issues 和 blocking edges；</li>
+        <li>一个失败测试先于实现的 Git 提交或终端记录；</li>
+        <li>一个 Standards / Spec 双轴 Review 的真实发现；</li>
+        <li>一个难 Bug 的 tight loop、最小复现、假设列表和回归测试；</li>
+        <li>一个 deep module 重构的 before/after interface；</li>
+        <li>一次 AI 做错的案例：为什么错、哪层防线失效、你后来如何改进；</li>
+        <li>可量化数据：任务耗时、Issue 数、测试数、返工次数或缺陷情况；</li>
+        <li>你对 Skill 做过的至少一项项目化修改。</li>
+      </ul>
+      <h3>12.1 建议准备的三张图</h3>
+      <ol>
+        <li><strong>主流程图：</strong>PD PRD → code-aware grilling → 信息分流 → engineering spec → task graph → implementation → review → QA。</li>
+        <li><strong>质量反馈图：</strong>type → test → build → browser → human QA。</li>
+        <li><strong>人机职责图：</strong>Human decisions / Agent legwork / Shared artifacts。</li>
+      </ol>
+      <h3>12.2 用数据时的口径</h3>
+      <p>例如“从需求确认到首个可演示纵向切片的时间”，比“AI 写了多少代码”更有意义；“Review 前测试失败次数”和“上线后缺陷”比 token 消耗更接近业务结果。</p>
+    </section>
+
+    <section id="quick">
+      <h2>13 · 面试前一页速记</h2>
+      <h3>任务类型 → 最短可用流程</h3>
+      <table>
+        <tbody>
+          <tr><td>小 Bug</td><td><code>diagnosing-bugs → tdd → code-review</code></td></tr>
+          <tr><td>明确的小接口</td><td><code>grill-with-docs → implement → tdd → code-review</code></td></tr>
+          <tr><td>复杂业务功能</td><td><code>grill-with-docs → to-spec → to-tickets → implement → tdd → code-review</code></td></tr>
+          <tr><td>外部系统接入</td><td><code>research / prototype → to-spec 或 implement</code></td></tr>
+          <tr><td>业务规则等别人确认</td><td>在当前流程中途插入 <code>to-questionnaire</code></td></tr>
+        </tbody>
+      </table>
+      <p><strong>一句话记忆：</strong>Bug 先诊断，小改走短环，大需求写 Spec 再拆票，外部未知先研究或实验，答案在别人脑中就发问卷。</p>
+      <h3>我的 AI Coding 五句话</h3>
+      <ol>
+        <li>AI 是非确定性执行者，软件工程反馈比 Prompt 崇拜重要。</li>
+        <li>PD 给 PRD 后先结合代码做 grilling；工程事实让 Agent 查，业务决定回到真正的 owner。</li>
+        <li>大任务变成 tracer-bullet Issue 图，每张 Issue 一个新上下文。</li>
+        <li>在公共 seam 上 Red-Green，结束后 Standards / Spec 双轴 Review。</li>
+        <li>长期通过 deep modules、指针治理和安全边界控制软件熵。</li>
+      </ol>
+      <h3>关键术语</h3>
+      <table>
+        <tbody>
+          <tr><td>PRD / Spec</td><td>PRD 说明业务目标；工程 Spec 固定后端行为、技术约束与验收方式</td></tr>
+          <tr><td>Questionnaire</td><td>答案在别人脑中时，发给单个 owner 的异步结构化问卷</td></tr>
+          <tr><td>Frontier</td><td>所有前提已满足、现在可以回答或领取的节点集合</td></tr>
+          <tr><td>Tracer bullet</td><td>最小但完整的端到端纵向切片</td></tr>
+          <tr><td>Context pointer</td><td>常驻上下文中指向按需材料、并描述触发条件的引用</td></tr>
+          <tr><td>Seam</td><td>无需修改当前位置即可替换行为的地方，也是测试公共接口的位置</td></tr>
+          <tr><td>Deep module</td><td>小接口后隐藏大量行为，为调用者提供 leverage，为维护者提供 locality</td></tr>
+          <tr><td>Tight loop</td><td>快速、稳定、可无人运行、能对精确问题变红的反馈命令</td></tr>
+          <tr><td>Fog of war</td><td>知道将来有问题，但现在还不能精确表述的规划区域</td></tr>
+          <tr><td>Sediment</td><td>不断累积、过时且稀释注意力的 Agent 文档层</td></tr>
+        </tbody>
+      </table>
+      <h3>最后一句</h3>
+      <blockquote><p>我使用 AI Coding 的核心不是让 Agent 代替工程师，而是把工程师的判断力放到更高杠杆的位置，并把可重复的工程纪律交给 Agent 执行。</p></blockquote>
+      <p><strong>资料：</strong><a href="https://github.com/mattpocock/skills">mattpocock/skills</a> · <a href="AI_Agent_工程化课程中文笔记.html">配套课程中文笔记</a></p>
+    </section>
+
+    <div class="footer">整理日期：2026-08-30 · 来源仓库完整源码归纳，面试案例中的业务数据请替换为个人真实证据</div>
+  </main>
+</div>
+</body>
+</html>

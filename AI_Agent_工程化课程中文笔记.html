@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Agent 工程化开发：中文课程笔记</title>
+  <style>
+    :root {
+      --bg: #f6f3ed;
+      --paper: #fffdf8;
+      --ink: #20231f;
+      --muted: #697067;
+      --line: #dedbd1;
+      --brand: #195f55;
+      --brand-soft: #e6f1ed;
+      --accent: #c85b32;
+      --accent-soft: #fff0e8;
+      --code: #18211f;
+      --shadow: 0 16px 40px rgba(43, 49, 44, .08);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 85% 5%, rgba(200,91,50,.10), transparent 24rem),
+        radial-gradient(circle at 10% 22%, rgba(25,95,85,.09), transparent 22rem),
+        var(--bg);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.75;
+    }
+    a { color: var(--brand); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    .layout { display: grid; grid-template-columns: 270px minmax(0, 920px); gap: 48px; max-width: 1260px; margin: 0 auto; padding: 32px 28px 80px; }
+    aside { position: sticky; top: 22px; align-self: start; max-height: calc(100vh - 44px); overflow: auto; padding: 20px; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,253,248,.9); backdrop-filter: blur(12px); box-shadow: var(--shadow); }
+    aside strong { display: block; color: var(--brand); margin-bottom: 10px; letter-spacing: .08em; font-size: 13px; }
+    aside a { display: block; padding: 7px 10px; border-radius: 8px; color: #3b423d; text-decoration: none; font-size: 14px; }
+    aside a:hover { background: var(--brand-soft); color: var(--brand); }
+    main { min-width: 0; }
+    .hero { padding: 52px 48px; color: white; border-radius: 28px; background: linear-gradient(135deg, #174b45 0%, #1f7467 68%, #318578 100%); box-shadow: var(--shadow); position: relative; overflow: hidden; }
+    .hero::after { content: ""; position: absolute; width: 250px; height: 250px; right: -55px; bottom: -120px; border: 42px solid rgba(255,255,255,.09); border-radius: 50%; }
+    .eyebrow { color: #bfe5da; font-weight: 700; letter-spacing: .14em; font-size: 13px; text-transform: uppercase; }
+    h1 { margin: 12px 0 18px; font-size: clamp(34px, 5vw, 58px); line-height: 1.12; letter-spacing: -.04em; }
+    .hero p { max-width: 720px; margin: 0; color: #eaf7f3; font-size: 18px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+    .meta span { padding: 5px 11px; border: 1px solid rgba(255,255,255,.25); border-radius: 999px; color: #eaf7f3; font-size: 13px; }
+    section { margin-top: 36px; padding: 36px 40px; background: var(--paper); border: 1px solid var(--line); border-radius: 22px; box-shadow: 0 8px 24px rgba(43,49,44,.04); }
+    h2 { margin: 0 0 18px; color: #174b45; font-size: 28px; line-height: 1.3; letter-spacing: -.02em; }
+    h3 { margin: 30px 0 8px; font-size: 20px; line-height: 1.4; }
+    h4 { margin: 22px 0 6px; font-size: 17px; }
+    p { margin: 10px 0; }
+    ul, ol { padding-left: 1.3em; }
+    li { margin: 6px 0; }
+    code { padding: .12em .4em; border-radius: 5px; background: #ecebe5; color: #9b3e20; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .9em; }
+    pre { overflow-x: auto; padding: 20px; border-radius: 14px; background: var(--code); color: #e8f2ef; line-height: 1.55; }
+    pre code { padding: 0; color: inherit; background: transparent; }
+    blockquote { margin: 22px 0; padding: 14px 20px; border-left: 4px solid var(--accent); background: var(--accent-soft); border-radius: 0 12px 12px 0; }
+    blockquote p { margin: 0; font-weight: 650; }
+    .lead { color: #3e4942; font-size: 18px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 18px 0; }
+    .card { padding: 18px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+    .card b { display: block; color: var(--brand); margin-bottom: 5px; }
+    .callout { margin: 20px 0; padding: 18px 20px; border-radius: 14px; background: var(--brand-soft); border: 1px solid #c6ded6; }
+    .warning { background: var(--accent-soft); border-color: #efd0c3; }
+    .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 20px 0; }
+    .flow span { padding: 8px 12px; border-radius: 999px; background: var(--brand-soft); color: var(--brand); font-weight: 700; }
+    .flow i { color: var(--muted); font-style: normal; }
+    table { width: 100%; border-collapse: collapse; margin: 18px 0; font-size: 15px; }
+    th, td { padding: 11px 12px; border: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { background: #eeeee8; color: #344038; }
+    details { margin: 12px 0; padding: 12px 16px; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+    summary { cursor: pointer; color: var(--brand); font-weight: 700; }
+    .checklist { list-style: none; padding-left: 0; }
+    .checklist li { position: relative; padding-left: 28px; }
+    .checklist li::before { content: "✓"; position: absolute; left: 0; top: 0; color: var(--brand); font-weight: 800; }
+    .footer { color: var(--muted); text-align: center; margin-top: 30px; font-size: 13px; }
+    @media (max-width: 900px) {
+      .layout { display: block; padding: 14px; }
+      aside { position: static; max-height: none; margin-bottom: 18px; }
+      aside nav { columns: 2; }
+      .hero { padding: 36px 26px; border-radius: 20px; }
+      section { padding: 28px 24px; }
+      .grid { grid-template-columns: 1fr; }
+    }
+    @media print {
+      body { background: white; }
+      .layout { display: block; max-width: none; padding: 0; }
+      aside { display: none; }
+      .hero, section { box-shadow: none; break-inside: avoid; }
+      section { border-color: #bbb; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside>
+      <strong>课程笔记目录</strong>
+      <nav>
+        <a href="#overview">01 · 总体框架</a>
+        <a href="#llm">02 · LLM 的约束</a>
+        <a href="#daily">03 · 日常操作与会话</a>
+        <a href="#context">04 · 上下文管理</a>
+        <a href="#steering">05 · Steering 与 Skills</a>
+        <a href="#planning">06 · PRD 与规划</a>
+        <a href="#tracer">07 · Tracer Bullet</a>
+        <a href="#feedback">08 · 反馈循环与 TDD</a>
+        <a href="#ralph">09 · Ralph 自主循环</a>
+        <a href="#kanban">10 · GitHub Issues / Kanban</a>
+        <a href="#hitl">11 · HITL 与 AFK</a>
+        <a href="#research">12 · 研究与原型</a>
+        <a href="#architecture">13 · AI 友好架构</a>
+        <a href="#playbook">14 · 实战工作流</a>
+        <a href="#cheatsheet">15 · 速查表</a>
+      </nav>
+    </aside>
+
+    <main>
+      <header class="hero">
+        <div class="eyebrow">AI Coding · Engineering Notes</div>
+        <h1>AI Agent 工程化开发</h1>
+        <p>根据下载目录中 77 个 HTML 课程页面整理。重点不是某个工具按钮怎么点，而是如何把 AI 编程从“聊天生成代码”升级为可规划、可验证、可持续、可自主运行的工程系统。</p>
+        <div class="meta">
+          <span>中文主题笔记</span><span>77 个页面归纳</span><span>Claude Code / Agent Skills</span><span>Ralph / Kanban</span>
+        </div>
+      </header>
+
+      <section id="overview">
+        <h2>01 · 一句话理解整门课</h2>
+        <p class="lead">高质量 AI 编程的关键，不是写出一条“神 Prompt”，而是把需求、上下文、代码结构、反馈循环、权限边界和任务队列组合成一个 Agent 能稳定工作的系统。</p>
+        <blockquote><p>人的核心价值是提供目标、品味和判断；AI 的核心价值是承担探索、实现和重复劳动。</p></blockquote>
+        <div class="flow">
+          <span>研究 / 原型</span><i>→</i><span>PRD</span><i>→</i><span>Issues / Plan</span><i>→</i><span>Agent 实现</span><i>→</i><span>自动反馈</span><i>→</i><span>人工 QA</span><i>→</i><span>新 Issue</span>
+        </div>
+        <div class="grid">
+          <div class="card"><b>目标一：可控</b>让 Agent 明白做什么、不做什么、如何判断完成。</div>
+          <div class="card"><b>目标二：可信</b>用类型、测试、格式化和人工 QA 提供真实反馈。</div>
+          <div class="card"><b>目标三：可扩展</b>把大任务切成小任务，让每个上下文只处理一个清晰单元。</div>
+          <div class="card"><b>目标四：可自主</b>任务足够明确且防护到位后，让 Agent 在沙箱中 AFK 执行。</div>
+        </div>
+      </section>
+
+      <section id="llm">
+        <h2>02 · 先接受 LLM 的四个约束</h2>
+        <h3>2.1 注意力不是无限的</h3>
+        <p>上下文窗口的“最大容量”不等于模型始终能高质量处理的容量。课程将前段称为 <strong>smart zone</strong>，将信息过多后推理明显变差的区域称为 <strong>dumb zone</strong>。因此，更大的上下文窗口并不能替代上下文管理。</p>
+        <h3>2.2 幻觉是缺少清晰信息时的合理补全</h3>
+        <p>模型不是数据库。它可能发明不存在的方法、记错新版本 API，或者按旧知识编写代码。重要文档、真实类型定义、现有用法和版本信息应该放进当前上下文，并通过运行代码验证。</p>
+        <h3>2.3 Agent 是无状态的新员工</h3>
+        <p>每次新会话都像一位刚加入项目的工程师。它没有人类长期维护代码库形成的“肌肉记忆”，所以仓库能否快速被探索、模块边界是否清晰、约定是否显式，直接决定 Agent 的表现。</p>
+        <h3>2.4 知识存在截止日期</h3>
+        <p>新框架、新 SDK 和新服务不能只依赖模型记忆。应当查询当前官方资料，必要时整理成临时研究文档，供后续多个任务复用。</p>
+        <div class="callout warning"><strong>工程含义：</strong>不要把失败简单归咎于模型“不够聪明”。先检查它是否拿到了正确上下文、任务是否过大、反馈是否充分、代码库是否难以理解。</div>
+      </section>
+
+      <section id="daily">
+        <h2>03 · 日常操作与会话管理</h2>
+        <p>课程前半部分先建立基本操作习惯：引用文件、运行 Bash、观察工具调用、连接 IDE、回退变更、暂停和恢复会话，以及配置权限。</p>
+        <table>
+          <thead><tr><th>能力</th><th>用途</th><th>注意点</th></tr></thead>
+          <tbody>
+            <tr><td><code>@文件</code> 引用</td><td>明确把计划、PRD 或代码放入上下文</td><td>优于含糊地说“看一下那个文件”</td></tr>
+            <tr><td>Bash 命令</td><td>检查仓库、运行测试和开发服务</td><td>长时间服务与一次性命令要区分</td></tr>
+            <tr><td>IDE Diff</td><td>直观看改动、接受或拒绝局部修改</td><td>适合人工审查，不等同于测试</td></tr>
+            <tr><td>Rewind / Git</td><td>回到之前状态或恢复会话</td><td>Git 保护代码历史，不能代替权限隔离</td></tr>
+            <tr><td>权限规则</td><td>减少重复确认</td><td>只放行精确命令，避免过宽通配符</td></tr>
+          </tbody>
+        </table>
+        <p>课程项目还通过专门的状态行显示上下文使用量，目的不是追求精确百分比，而是让“上下文预算”成为执行决策的一部分。</p>
+      </section>
+
+      <section id="context">
+        <h2>04 · 上下文管理：Plan → Execute → Clear</h2>
+        <h3>4.1 Plan Mode 做什么</h3>
+        <p>Plan Mode 限制写文件能力，让 Agent 主要做读取、探索、运行只读命令、询问需求和形成计划。它的价值有两层：</p>
+        <ul>
+          <li>逼迫人把含糊想法变成明确决策；</li>
+          <li>让 Agent 在写代码前理解现有架构和约束。</li>
+        </ul>
+        <h3>4.2 推荐循环</h3>
+        <ol>
+          <li><strong>Plan：</strong>从短需求开始，让 Agent 探索代码，并要求它“把每个设计决定都问清楚”。</li>
+          <li><strong>Execute：</strong>确认计划后实现，持续观察类型检查、测试和上下文消耗。</li>
+          <li><strong>QA：</strong>真实运行功能，用不同角色和边界条件测试。</li>
+          <li><strong>Clear：</strong>完成一个独立单元后清空上下文，用持久化的计划和代码进入下一轮。</li>
+        </ol>
+        <p>如果规划结束时上下文仍很轻，可以保留讨论中丰富的决策信息继续实现；如果已经接近高负荷区，应清空后用计划文件重新开始。这里没有机械阈值，核心是给调试和迭代预留空间。</p>
+        <h3>4.3 Compaction 的风险</h3>
+        <p>自动压缩会把早期对话总结成更短内容，但反复压缩会形成“沉积层”：细节丢失、过时信息保留、摘要继续被摘要。重要决定应落到 PRD、计划、Issue、测试和代码中，而不是依赖对话历史。</p>
+        <h3>4.4 Subagent 的真正意义</h3>
+        <p>子 Agent 首先是一种<strong>上下文隔离机制</strong>：让探索、研究等任务在独立窗口大量工作，只把结论摘要交回主 Agent。它也可以并行，但并行不是唯一目的。</p>
+      </section>
+
+      <section id="steering">
+        <h2>05 · Steering：AGENTS.md、CLAUDE.md、Memory 与 Skills</h2>
+        <h3>5.1 Steering 是提升概率，不是强制证明</h3>
+        <p>仓库说明文件可以告诉 Agent：同类型参数使用对象参数、service 必须配套测试、文件如何命名等。这些规则应该稳定、项目特定、短小，而且最好能通过测试或钩子进一步强制。</p>
+        <h3>5.2 Progressive Disclosure（渐进披露）</h3>
+        <p>把所有规则塞进一个巨大的说明文件，会持续占用上下文，并让无关规则竞争注意力。更好的方式是：</p>
+        <pre><code>AGENTS.md / CLAUDE.md
+├── 只保留全局、高频、稳定规则
+├── 链接到 React Router 指南
+├── 链接到数据库指南
+└── 链接到前端规范</code></pre>
+        <p>Agent 默认只看到“地图”，需要时才读取对应材料。这就是课程贯穿始终的渐进披露思想。</p>
+        <h3>5.3 Agent Skills</h3>
+        <p>Skill 是一个可发现的文件夹，包含 <code>SKILL.md</code>、参考资料、脚本和其他资源。它把某种能力或工作流封装成可复用模块。</p>
+        <table>
+          <thead><tr><th>类型</th><th>谁触发</th><th>例子</th></tr></thead>
+          <tbody>
+            <tr><td>Agent-invoked</td><td>模型根据描述自动发现</td><td>遇到 pnpm 缺失、SQLite 原生模块错误时自动修复</td></tr>
+            <tr><td>User-invoked</td><td>用户显式调用</td><td>写 PRD、生成 Issues、执行 TDD、迁移框架</td></tr>
+          </tbody>
+        </table>
+        <p>好 Skill 倾向于简洁：触发条件清楚、主流程短、复杂参考材料单独存放。不要用大量文字重复模型本来就知道的常识。</p>
+        <h3>5.4 Automatic Memory</h3>
+        <p>自动记忆可以保存依赖安装方式、测试模式等经验，但必须定期审计。过时记忆会比没有记忆更危险，因为它会持续把 Agent 引向错误方向。</p>
+      </section>
+
+      <section id="planning">
+        <h2>06 · 大任务：PRD 描述终点，计划描述路径</h2>
+        <p>单个上下文放不下大型重构或完整产品功能时，不要硬塞，而要切分。</p>
+        <div class="grid">
+          <div class="card"><b>PRD.md：终点</b>问题、目标用户、为什么做、用户故事、验收标准、范围外事项、关键决策。</div>
+          <div class="card"><b>PLAN.md / Issues：路径</b>如何把终点拆成可单独完成、可验证、互不踩踏的小块。</div>
+        </div>
+        <h3>6.1 好 PRD 的内容</h3>
+        <ul>
+          <li>问题陈述与价值，而不只是功能清单；</li>
+          <li>带编号的用户故事：谁、想做什么、为什么；</li>
+          <li>权限、空状态、异常路径、筛选和 URL 状态等边界；</li>
+          <li>将构建或修改的模块，以及在哪个边界测试；</li>
+          <li>明确 out of scope，防止任务膨胀。</li>
+        </ul>
+        <h3>6.2 “Grill me” 的价值</h3>
+        <p>让 Agent 连续追问设计选择，比让它立刻写一份看似完整的规格更有价值。真正的计划质量来自讨论中形成的共享理解，而不是模板长度。</p>
+        <h3>6.3 不要过度规划</h3>
+        <p>计划只记录跨阶段稳定的决定，例如路由、模块边界、是否新增依赖和关键数据来源。实现细节往往只有写代码时才会暴露，提前写成伪代码反而容易过时。</p>
+      </section>
+
+      <section id="tracer">
+        <h2>07 · Tracer Bullet：先打通纵向切片</h2>
+        <p>LLM 天然容易“横向开发”：先写完全部数据库层，再写服务层，再写 UI。问题是直到很晚才能验证各层是否真正连通。</p>
+        <table>
+          <thead><tr><th>方式</th><th>阶段划分</th><th>反馈出现时间</th></tr></thead>
+          <tbody>
+            <tr><td>横向分层</td><td>数据库 → 服务 → 路由 → UI</td><td>最后才看到端到端结果</td></tr>
+            <tr><td>纵向切片 / Tracer Bullet</td><td>最小数据库 + 最小服务 + 最小 UI</td><td>第一阶段就验证全栈链路</td></tr>
+          </tbody>
+        </table>
+        <p>第一颗“曳光弹”不追求完整，而是用最小真实数据穿过所有关键层，尽早暴露未知问题。后续阶段沿已验证路径扩展。</p>
+        <div class="callout"><strong>计划提示语：</strong>“Use tracer bullets. Make phase one the smallest end-to-end vertical slice that can be manually verified.”</div>
+        <p>每阶段执行节奏：Explore → Implement → Review → Iterate → Commit → Clear。完成阶段就建立 Git 检查点，并为下一阶段释放全新上下文。</p>
+      </section>
+
+      <section id="feedback">
+        <h2>08 · 反馈循环：让正确性可观测</h2>
+        <p>说明文件和 Skills 只能提高 Agent 做对的概率；类型、测试和运行结果才能给它确定性反馈。</p>
+        <h3>8.1 反馈层级</h3>
+        <ol>
+          <li><strong>格式化与 Lint：</strong>捕捉机械问题；</li>
+          <li><strong>类型检查：</strong>捕捉接口和调用错误；</li>
+          <li><strong>单元 / 集成测试：</strong>验证真实行为；</li>
+          <li><strong>构建与运行：</strong>验证环境和整合；</li>
+          <li><strong>人工 QA：</strong>验证体验、品味和业务目的。</li>
+        </ol>
+        <h3>8.2 Do Work Skill</h3>
+        <p>课程把通用实现节奏封装成一个简洁 Skill：</p>
+        <pre><code>1. Understand the task
+2. Plan it if it is not already planned
+3. Implement
+4. Validate with the project's real feedback loops
+5. Commit</code></pre>
+        <p>关键是明确写出项目真实命令，如 <code>pnpm run type-check</code> 和 <code>pnpm run test</code>，而不是笼统说“确保质量”。</p>
+        <h3>8.3 Pre-commit Hooks</h3>
+        <p>人类嫌慢的 pre-commit 检查，对 Agent 反而很合适。使用 Husky / lint-staged，在提交前自动格式化、类型检查和测试；失败就阻止提交并把错误直接反馈给 Agent。</p>
+        <h3>8.4 Red → Green → Refactor</h3>
+        <ol>
+          <li>写一个最小行为的失败测试，并确认它真的失败；</li>
+          <li>写最少代码让它通过；</li>
+          <li>保持测试为绿的前提下整理实现；</li>
+          <li>再加入下一条纵向行为。</li>
+        </ol>
+        <p>失败测试能证明 Bug 或缺失行为真实存在，也迫使实现拥有可测试接口。课程尤其推荐把 Red-Green-Refactor 与 Tracer Bullet 结合。</p>
+      </section>
+
+      <section id="ralph">
+        <h2>09 · Ralph：把 Agent 放进循环</h2>
+        <p>Ralph 不是神秘框架，本质就是反复用相同规则启动 Agent，让它每次选择并完成一个任务，直到没有工作。</p>
+        <pre><code>while tasks_remain:
+    context = recent_commits + open_issues + workflow_prompt
+    run_agent(context)
+    validate()
+    commit()
+    update_or_close_issue()</code></pre>
+        <p>与手动多阶段计划相比，Ralph 移除了每阶段都要由人说“继续下一步”的机械环节。人可以只在开始时定义工作，在结束时做 QA。</p>
+        <h3>9.1 从 HITL 逐步过渡到 AFK</h3>
+        <ul>
+          <li>先运行一次并观察它如何探索、实现、申请权限、测试和提交；</li>
+          <li>把常见错误修复为 Skill，把验证固化为钩子；</li>
+          <li>任务描述稳定后，再允许多次自动迭代；</li>
+          <li>设置最大迭代次数和明确结束信号，避免无限循环。</li>
+        </ul>
+        <h3>9.2 为什么 AFK 需要沙箱</h3>
+        <p>AFK 模式不能不断等待用户批准命令，但直接跳过权限检查又会扩大风险。Docker 沙箱把 Agent 限制在容器内，使其无法访问主机下载目录、密钥和其他项目。</p>
+        <blockquote><p>Git 保护代码历史；沙箱限制 Agent 能触碰的文件、进程和系统边界。二者互补。</p></blockquote>
+      </section>
+
+      <section id="kanban">
+        <h2>10 · 从多阶段计划升级到 Kanban / GitHub Issues</h2>
+        <p>大型计划太刚性：新增任务困难、并行性差、QA 反馈不易插入。课程后期更推荐把 PRD 转为带依赖关系的 Issues 图。</p>
+        <table>
+          <thead><tr><th>维度</th><th>多阶段计划</th><th>Kanban Issues</th></tr></thead>
+          <tbody>
+            <tr><td>修改</td><td>改计划会影响整体编号和顺序</td><td>直接新增 Issue 和依赖</td></tr>
+            <tr><td>并行</td><td>通常按 Phase 顺序</td><td>所有无阻塞任务都可领取</td></tr>
+            <tr><td>QA</td><td>需要另行安排</td><td>QA 发现的问题自然进入队列</td></tr>
+            <tr><td>人机分工</td><td>不明显</td><td>Issue 可标记 HITL 或 AFK</td></tr>
+          </tbody>
+        </table>
+        <h3>10.1 PRD → Issues 工作流</h3>
+        <ol>
+          <li>定位 PRD，探索相关代码；</li>
+          <li>按纵向切片草拟 Issues；</li>
+          <li>标明依赖与 blocked-by 关系；</li>
+          <li>标记 HITL / AFK；</li>
+          <li>生成一个最终人工 QA Issue；</li>
+          <li>询问用户粒度和依赖是否合理，再创建任务。</li>
+        </ol>
+        <h3>10.2 Backlog 是人与 Agent 的异步接口</h3>
+        <p>人一边检查已完成的功能并创建 Bug/Polish Issue，Ralph 一边从剩余队列挑选最高优先级任务。建议优先顺序通常是：关键 Bug → 开发基础设施 → 新功能 Tracer Bullet → Polish → 重构。</p>
+      </section>
+
+      <section id="hitl">
+        <h2>11 · 哪些工作必须有人参与</h2>
+        <p>目标不是消灭人，而是让人只出现在判断价值最高的位置。</p>
+        <div class="grid">
+          <div class="card"><b>适合 HITL</b>需求规划、产品取舍、架构接口、外部技术选型、原型审美、最终 QA。</div>
+          <div class="card"><b>适合 AFK</b>明确 Bug、依赖升级、已有模式下的功能实现、测试补充、格式化、机械重构。</div>
+        </div>
+        <p>判断标准不是任务“难不难”，而是过程中是否需要<strong>品味、外部事实或不可自动观测的反馈</strong>。例如“按钮是否舒服”“这个架构是否符合团队价值”“产品是否真的解决问题”，仍需要人。</p>
+        <div class="callout warning"><strong>反模式：</strong>把一切都交给 AI 会得到缺少品味的产品；把一切都留在人手里，又浪费 Agent 擅长的耐心和吞吐量。</div>
+      </section>
+
+      <section id="research">
+        <h2>12 · Research 与 Prototype：提前消灭未知未知</h2>
+        <h3>12.1 Research 是缓存昂贵探索</h3>
+        <p>如果后续 10 个 Agent 迭代都要重新搜索同一个 SDK，成本和错误率都会上升。可以先由人与 AI 一起比较方案、查官方资料、验证约束，保存一份临时 <code>research.md</code>。</p>
+        <p>研究文档应包含：候选方案、优缺点、选择理由、项目集成点、实现注意事项。它是下一步 PRD 和 Issues 的输入。</p>
+        <h3>12.2 文档有生命周期</h3>
+        <p>研究资产很容易腐化。完成实现和 QA 后，如果它不再持续提供价值，应删除或更新；Git 历史已经可以找回旧信息。陈旧文档会误导未来 Agent。</p>
+        <h3>12.3 Prototype 把文字决定变成可体验对象</h3>
+        <p>原型特别适合：</p>
+        <ul>
+          <li>前端设计：在开发者专用路由展示多个方案；</li>
+          <li>新服务：验证鉴权、连接、权限和 SDK 行为；</li>
+          <li>新架构：验证模块边界和端到端数据流。</li>
+        </ul>
+        <p>课程案例先研究实时在线状态服务，再制作开发专用原型。原型虽用于验证，但仍运行类型检查和测试，并导出可复用组件，因此后续实现 Agent 能直接采用生产级资产。</p>
+        <p>Bug 修复和现有成熟模式的简单扩展通常不需要原型，因为目标行为已经清楚。</p>
+      </section>
+
+      <section id="architecture">
+        <h2>13 · 设计 AI 喜欢的代码库</h2>
+        <h3>13.1 AI 会放大软件熵</h3>
+        <p>“AI 让代码变便宜”只说对了一半。Agent 很擅长快速添加代码，却不天然擅长删除、抽象和维护整体一致性，而且会模仿仓库里已有的坏模式。坏代码库会让每次探索更昂贵、测试反馈更弱、修改更危险。</p>
+        <h3>13.2 Deep Modules（深模块）</h3>
+        <p>深模块用很薄、稳定的接口隐藏大量内部实现：</p>
+        <pre><code>const quiz = createQuizModule({ db, scoringStrategy, quizPassXp })
+
+quiz.getQuizForLesson(lessonId)
+quiz.getBestAttempt(userId, quizId)
+quiz.submitAttempt({ userId, quizId, answers })
+quiz.saveQuiz(input)
+quiz.deleteQuiz(quizId)</code></pre>
+        <p>相比几十个浅层小文件和互相穿透的调用，深模块让 Agent 只读接口就知道能力边界；集成测试也能从外部验证大块行为，而不与内部实现绑定。</p>
+        <h3>13.3 人类成为接口与架构设计者</h3>
+        <p>理想分工是：人设计模块边界、接口和价值取舍；AI 填充实现。审查重点从逐行检查内部代码，转向接口、测试和端到端行为。</p>
+        <h3>13.4 把模块意识前置到 PRD</h3>
+        <ul>
+          <li>列出要新增或修改的主要模块；</li>
+          <li>寻找可封装为深模块的机会；</li>
+          <li>与人确认模块是否符合预期；</li>
+          <li>确认哪些边界必须有测试。</li>
+        </ul>
+      </section>
+
+      <section id="playbook">
+        <h2>14 · 一套可直接采用的实战 Playbook</h2>
+        <h3>A. 小 Bug / 小功能</h3>
+        <ol>
+          <li>新建 Git 分支或 worktree，清空 Agent 上下文；</li>
+          <li>描述预期行为与实际行为；</li>
+          <li>要求先写失败测试重现问题；</li>
+          <li>最小修复，运行类型、相关测试、全量测试；</li>
+          <li>人工验证，提交并记录结果。</li>
+        </ol>
+        <h3>B. 单上下文中型功能</h3>
+        <ol>
+          <li>进入 Plan Mode，要求探索并追问设计决定；</li>
+          <li>确认权限、异常、空状态和验收标准；</li>
+          <li>检查上下文预算，决定保留讨论还是 Clear 后执行；</li>
+          <li>用 Tracer Bullet + Red-Green-Refactor 实现；</li>
+          <li>自动验证 + 人工 QA。</li>
+        </ol>
+        <h3>C. 大型功能</h3>
+        <ol>
+          <li>有外部未知时先 Research，有体验未知时先 Prototype；</li>
+          <li>人与 Agent 一起写 PRD，强调 Why、模块和测试边界；</li>
+          <li>把 PRD 转成带依赖的纵向 Issues，区分 HITL / AFK；</li>
+          <li>在沙箱中运行 Ralph，限制迭代次数；</li>
+          <li>人执行最终 QA Issue，把发现继续加入 Backlog。</li>
+        </ol>
+        <h3>D. 团队长期治理</h3>
+        <ul class="checklist">
+          <li>说明文件只放稳定、高频约定；</li>
+          <li>低频知识封装为 Skills 并渐进披露；</li>
+          <li>自动 Memory、研究文档和 Skills 定期审计；</li>
+          <li>pre-commit / CI 强制运行可靠反馈；</li>
+          <li>持续把浅模块深化为清晰接口；</li>
+          <li>权限最小化，AFK Agent 运行在沙箱中。</li>
+        </ul>
+      </section>
+
+      <section id="cheatsheet">
+        <h2>15 · 关键概念速查</h2>
+        <table>
+          <thead><tr><th>概念</th><th>一句话解释</th></tr></thead>
+          <tbody>
+            <tr><td>Smart Zone</td><td>模型注意力最可靠的上下文前段，应尽量把真正实现留在这里。</td></tr>
+            <tr><td>Plan Mode</td><td>只读探索与需求澄清阶段，避免过早写代码。</td></tr>
+            <tr><td>Progressive Disclosure</td><td>默认只提供地图，需要时再读取详细规则和资料。</td></tr>
+            <tr><td>Agent Skill</td><td>封装可发现的工作流、知识、脚本和资源。</td></tr>
+            <tr><td>PRD</td><td>描述要到达的产品终点、原因和验收标准。</td></tr>
+            <tr><td>Tracer Bullet</td><td>先做一条最小但真实的端到端纵向切片。</td></tr>
+            <tr><td>Red-Green-Refactor</td><td>失败测试 → 最小实现 → 整理代码的反馈循环。</td></tr>
+            <tr><td>Ralph</td><td>把 Agent 放入重复任务循环，直到队列为空。</td></tr>
+            <tr><td>HITL / AFK</td><td>需要人类判断的任务 / 可以自主完成的任务。</td></tr>
+            <tr><td>Deep Module</td><td>用简单稳定接口隐藏大量实现的高内聚模块。</td></tr>
+          </tbody>
+        </table>
+        <details>
+          <summary>最终自检：什么时候可以放心让 Agent AFK？</summary>
+          <ul>
+            <li>任务可以从 Issue 中独立理解，且没有未决产品选择；</li>
+            <li>仓库已有可运行的类型、测试、格式化和构建反馈；</li>
+            <li>Agent 知道何时提交、何时关闭任务、何时停止；</li>
+            <li>权限经过最小化，运行环境与主机隔离；</li>
+            <li>有最大迭代次数，失败结果可恢复；</li>
+            <li>结束后仍安排人工 QA，而不是把测试通过等同于产品正确。</li>
+          </ul>
+        </details>
+        <blockquote><p>最重要的转变：不要只问“模型能不能写这段代码”，而要问“我是否建立了一个让它能持续做对的环境”。</p></blockquote>
+      </section>
+
+      <div class="footer">整理来源：/Users/mywang/Downloads/HTML 下的课程网页（77 个 HTML 文件） · 主题归纳版，非逐字翻译</div>
+    </main>
+  </div>
+</body>
+</html>

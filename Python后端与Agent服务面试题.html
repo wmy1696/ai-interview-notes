@@ -1,0 +1,515 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>后端与 Agent 服务面试题：Python、Java 与 Spring Boot</title>
+  <style>
+    :root{--bg:#f5f7fb;--paper:#fff;--ink:#172033;--muted:#64708a;--line:#dfe5ef;--blue:#315efb;--blue2:#eaf0ff;--green:#087f5b;--green2:#e8f7f1;--orange:#a85000;--orange2:#fff2df;--red:#b42318;--red2:#ffefed;--code:#111827}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}
+    .layout{max-width:1120px;margin:auto;padding:24px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:22px}.side{position:sticky;top:18px;align-self:start;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:17px}.side b{display:block;margin-bottom:8px}.side a{display:block;color:#40506d;text-decoration:none;padding:6px 8px;border-radius:7px;font-size:14px}.side a:hover{background:var(--blue2);color:var(--blue)}main{min-width:0}.hero,section{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:30px;margin-bottom:20px}.hero{background:linear-gradient(135deg,#152551,#264ab2);color:#fff}.hero h1{margin:3px 0 10px;font-size:36px;line-height:1.25}.hero p{color:#dce5ff;margin:8px 0}.meta{display:flex;gap:9px;flex-wrap:wrap;margin-top:17px}.meta span{background:#ffffff17;border:1px solid #ffffff38;border-radius:999px;padding:4px 10px;font-size:13px}
+    h2{font-size:26px;margin:0 0 18px;line-height:1.35}h3{font-size:19px;margin:27px 0 8px}h4{font-size:16px;margin:19px 0 5px}p{margin:8px 0}code{background:#edf1f7;border-radius:5px;padding:2px 5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em}pre{background:var(--code);color:#e5e7eb;padding:18px;border-radius:12px;overflow:auto;line-height:1.55}pre code{background:none;padding:0;color:inherit}.answer,.note,.warn,.wrong{padding:15px 17px;border-radius:11px;margin:12px 0}.answer{background:var(--blue2);border-left:4px solid var(--blue)}.note{background:var(--green2);border-left:4px solid var(--green)}.warn{background:var(--orange2);border-left:4px solid #e58b27}.wrong{background:var(--red2);border-left:4px solid var(--red)}
+    table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px}th,td{padding:10px 11px;border:1px solid var(--line);text-align:left;vertical-align:top}th{background:#f0f3f8}ul,ol{padding-left:23px}.flow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:15px 0}.flow span{padding:8px 11px;border-radius:8px;background:var(--blue2);color:#2147bd;font-weight:650}.flow i{color:#8791a8;font-style:normal}.tag{display:inline-block;border-radius:999px;padding:2px 8px;font-size:12px;font-weight:700;background:var(--green2);color:var(--green)}details{border:1px solid var(--line);border-radius:10px;margin:9px 0;background:#fff}summary{padding:12px 14px;cursor:pointer;font-weight:700}details>div{padding:0 14px 14px}.footer{text-align:center;color:var(--muted);font-size:13px;padding:15px}
+    @media(max-width:800px){.layout{display:block;padding:12px}.side{position:static;margin-bottom:14px}.side a{display:inline-block}.hero,section{padding:21px}.hero h1{font-size:29px}table{display:block;overflow-x:auto;white-space:normal}}
+  </style>
+</head>
+<body>
+<div class="layout">
+  <nav class="side">
+    <b>面试题目录</b>
+    <a href="#map">00 · 三者关系</a>
+    <a href="#gil">01 · Python GIL</a>
+    <a href="#asyncio">02 · asyncio 事件循环</a>
+    <a href="#fastapi">03 · FastAPI 与 Agent</a>
+    <a href="#design">04 · Agent 服务设计题</a>
+    <a href="#compare">05 · 对比速查</a>
+    <a href="#recite">06 · 地铁背诵版</a>
+    <a href="#questions">07 · 高频追问</a>
+    <a href="#java-rag">08 · Spring Boot RAG 对接 Agent</a>
+    <a href="#redis-agent">09 · Redis 在 Agent 系统中</a>
+    <a href="#log">更新记录</a>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <div>Python Backend · AI Agent Engineering</div>
+      <h1>后端与 Agent 服务<br>面试题笔记</h1>
+      <p>覆盖 Python、Java、Spring Boot 与 Agent 工程：既能口语回答，也能经得住原理追问。</p>
+      <div class="meta"><span>Python / Java</span><span>后端研发视角</span><span>Agent 服务场景</span><span>口语版 + 深挖版</span><span>持续追加</span></div>
+    </header>
+
+    <section id="map">
+      <h2>00 · 先把三件事串起来</h2>
+      <div class="flow"><span>FastAPI 收到请求</span><i>→</i><span>ASGI 创建协程任务</span><i>→</i><span>事件循环调度</span><i>→</i><span>await LLM / DB / Tool</span><i>→</i><span>等待期间处理其他请求</span></div>
+      <p>Agent 服务的大部分时间不是在计算，而是在等待：等大模型返回、等数据库、等向量检索、等外部工具。因此它通常是 <strong>I/O 密集型</strong>。<code>asyncio</code> 能让单个线程在大量等待任务之间切换；FastAPI 基于 ASGI，天然适合承载这种异步请求、流式输出和长连接。</p>
+      <p>GIL 限制的是标准 CPython 中多个线程同时执行 Python 字节码的能力，但等待网络 I/O 时线程通常不会一直占着 GIL。因此对于典型 Agent 编排服务，首要问题往往不是 GIL，而是<strong>阻塞调用、超时、并发上限、背压、状态和可观测性</strong>。</p>
+      <div class="note"><strong>一句话总览：</strong>GIL 解释 CPU 线程为什么不能自然并行；事件循环解释单线程怎么高效管理大量 I/O；FastAPI 则把这种异步模型包装成适合 Agent 的 Web 服务框架。</div>
+    </section>
+
+    <section id="gil">
+      <h2>01 · Python 的 GIL 是什么？</h2>
+      <h3>30 秒口语回答</h3>
+      <div class="answer">GIL 全称是全局解释器锁。在常规 CPython 进程里，同一时刻通常只有一个线程能执行 Python 字节码，所以多线程不能让纯 Python 的 CPU 密集计算真正并行。但这不代表 Python 线程完全没用：网络、文件等 I/O 等待期间会释放执行机会，一些 C 扩展也会主动释放 GIL，因此多线程仍适合不少 I/O 场景。CPU 密集任务一般考虑多进程、原生扩展或独立计算服务。</div>
+
+      <h3>怎么真正理解</h3>
+      <p>可以把一个 CPython 进程想象成一个办公室：里面可以有很多线程，但执行 Python 字节码需要拿到唯一的“工牌”。一个线程执行一小段后，解释器可能把机会交给另一个线程。</p>
+      <ul>
+        <li><strong>并发不等于并行：</strong>多个线程可以交替推进，叫并发；同一时刻在多个 CPU 核上同时执行，才叫并行。</li>
+        <li><strong>I/O 密集仍可受益：</strong>线程等待网络、磁盘时，别的线程可以继续工作。</li>
+        <li><strong>CPU 密集受限制：</strong>两个纯 Python 计算线程往往不能同时占用两个核心执行字节码，还会产生切换开销。</li>
+        <li><strong>GIL 不等于线程安全：</strong>一个业务操作可能由多条字节码组成，线程仍可能交错；共享状态依然需要锁或其他同步手段。</li>
+      </ul>
+
+      <h3>面试中的任务选型</h3>
+      <table>
+        <thead><tr><th>任务</th><th>常见方案</th><th>理由</th></tr></thead>
+        <tbody>
+          <tr><td>调用 LLM、HTTP API、数据库</td><td><code>asyncio</code> 或线程池</td><td>主要时间花在等待 I/O。</td></tr>
+          <tr><td>少量同步阻塞 SDK</td><td><code>asyncio.to_thread()</code></td><td>把阻塞调用移出事件循环，但仍要限制线程池并发。</td></tr>
+          <tr><td>纯 Python 大量计算</td><td>多进程 / 任务队列</td><td>绕开单进程 GIL，并利用多核。</td></tr>
+          <tr><td>NumPy、推理引擎等</td><td>确认底层实现</td><td>不少 C/C++/CUDA 代码在计算时会释放 GIL，不能一概而论。</td></tr>
+        </tbody>
+      </table>
+
+      <div class="warn"><strong>版本补充怎么说：</strong>较新的 Python 提供了可选的 free-threaded 构建方向，但面试讨论 GIL 时应先明确“我说的是常规 CPython 运行时”。不要直接说“新版本已经没有 GIL”，因为运行方式、扩展兼容性和性能权衡仍需结合实际环境。</div>
+      <div class="wrong"><strong>常见错误：</strong>“有 GIL，所以 Python 不能并发”“用了多线程就绝对没有竞态”“asyncio 可以绕过 GIL 加速 CPU 计算”——这三句话都不对。</div>
+    </section>
+
+    <section id="asyncio">
+      <h2>02 · asyncio 的事件循环怎么理解？</h2>
+      <h3>30 秒口语回答</h3>
+      <div class="answer">asyncio 的核心是事件循环加协程。事件循环在一个线程中维护很多 Task：某个协程运行到 <code>await</code>，说明它现在要等 I/O，就主动交出控制权；事件循环转去执行其他已经就绪的任务。等 socket、定时器或 Future 完成后，再把原任务放回就绪队列继续执行。它是协作式并发，优势是用较低的线程成本管理大量 I/O 等待，不是让 CPU 代码自动并行。</div>
+
+      <h3>用餐厅类比</h3>
+      <p>一个服务员同时照看很多桌。给 A 桌下单以后，不会站在厨房门口干等，而是去服务 B 桌；厨房通知菜好了，再回来处理 A 桌。服务员就是事件循环，桌子是 Task，等待厨房就是 <code>await</code> I/O。</p>
+      <div class="flow"><span>运行协程 A</span><i>→</i><span>A 遇到 await</span><i>→</i><span>注册等待并让出</span><i>→</i><span>运行 B/C</span><i>→</i><span>A 的 I/O 就绪</span><i>→</i><span>恢复 A</span></div>
+
+      <h3>几个核心对象</h3>
+      <table>
+        <thead><tr><th>概念</th><th>作用</th></tr></thead>
+        <tbody>
+          <tr><td>Coroutine</td><td><code>async def</code> 定义的可暂停执行过程；调用它得到协程对象，不代表已经执行完。</td></tr>
+          <tr><td>Task</td><td>被事件循环调度的协程包装；多个 Task 可以并发推进。</td></tr>
+          <tr><td>Future</td><td>代表一个未来才会完成的结果，Task 本身也是 Future 的一种高层形式。</td></tr>
+          <tr><td>Event loop</td><td>维护就绪任务、定时器和 I/O 通知，选择下一个可运行工作。</td></tr>
+          <tr><td><code>await</code></td><td>等待一个 awaitable，并在未完成时主动把控制权还给事件循环。</td></tr>
+        </tbody>
+      </table>
+
+      <h3>最关键的面试点：await 不一定让出控制权</h3>
+      <p>只有被等待的对象尚未完成、确实需要等待时，协程才会暂停。如果你在 <code>async def</code> 中调用同步阻塞函数，事件循环仍会被卡住。</p>
+      <pre><code>import asyncio
+import time
+
+async def bad():
+    time.sleep(3)          # 阻塞事件循环，其他请求也会被拖住
+
+async def better():
+    await asyncio.sleep(3) # 当前 Task 暂停，事件循环可运行其他 Task
+
+async def legacy_sdk():
+    result = await asyncio.to_thread(blocking_call)
+    return result</code></pre>
+
+      <h3>并发不等于无限并发</h3>
+      <pre><code>semaphore = asyncio.Semaphore(20)
+
+async def call_llm(prompt: str):
+    async with semaphore:
+        return await llm_client.generate(prompt, timeout=30)</code></pre>
+      <p>真实 Agent 服务还要处理：超时、取消、重试、速率限制、连接池、背压和部分失败。<code>async</code> 只是并发机制，不会自动解决这些工程问题。</p>
+      <div class="wrong"><strong>常见错误：</strong>在 <code>async def</code> 里使用同步 HTTP 客户端、<code>time.sleep()</code>、CPU 密集循环，都会堵住事件循环；给函数加上 <code>async</code> 关键字并不会让内部代码自动异步。</div>
+    </section>
+
+    <section id="fastapi">
+      <h2>03 · FastAPI 为什么适合 Agent 服务？</h2>
+      <h3>30 秒口语回答</h3>
+      <div class="answer">Agent 服务通常是 I/O 密集型：一次请求会调用 LLM、向量库、数据库和多个外部工具，还可能持续流式返回结果。FastAPI 基于 ASGI，原生支持 async/await、流式响应和 WebSocket，能在等待外部 I/O 时继续处理其他请求；Pydantic 模型和 OpenAPI 又适合定义结构化输入输出与工具协议。它还方便接入依赖注入、认证、日志和 tracing。不过 FastAPI 只是服务层，长任务可靠执行、状态持久化、限流、重试和 CPU 密集计算仍需任务队列、数据库或独立 worker 配合。</div>
+
+      <h3>它与 Agent 场景的匹配点</h3>
+      <table>
+        <thead><tr><th>Agent 服务特点</th><th>FastAPI 能力</th><th>工程价值</th></tr></thead>
+        <tbody>
+          <tr><td>大量等待 LLM / Tool / DB</td><td>ASGI + <code>async/await</code></td><td>等待时释放事件循环，提高 I/O 并发。</td></tr>
+          <tr><td>Token 持续产生</td><td><code>StreamingResponse</code>、SSE、WebSocket</td><td>降低首字节延迟，支持实时进度与双向交互。</td></tr>
+          <tr><td>输入输出结构复杂</td><td>Pydantic 校验与序列化</td><td>让请求、工具参数和结构化输出拥有明确契约。</td></tr>
+          <tr><td>需要给客户端集成</td><td>自动 OpenAPI 文档</td><td>便于前后端联调，也可作为生成客户端的契约。</td></tr>
+          <tr><td>模型、租户、权限等横切关注点</td><td>依赖注入、中间件、生命周期管理</td><td>统一管理鉴权、客户端、连接池、配置、日志和 tracing。</td></tr>
+          <tr><td>部署需横向扩容</td><td>无状态 HTTP 服务易复制 worker</td><td>会话和任务状态外置后，可按流量水平扩容。</td></tr>
+        </tbody>
+      </table>
+
+      <h3>一次 Agent 请求怎么跑</h3>
+      <div class="flow"><span>POST /runs</span><i>→</i><span>校验输入</span><i>→</i><span>鉴权 / 限流</span><i>→</i><span>调用 LLM</span><i>→</i><span>调用 Tools</span><i>→</i><span>保存状态</span><i>→</i><span>SSE 流式返回</span></div>
+      <pre><code>from fastapi import FastAPI
+from fastapi.responses import StreamingResponse
+
+app = FastAPI()
+
+@app.post("/agents/{agent_id}/runs")
+async def run_agent(agent_id: str, request: RunRequest):
+    async def events():
+        async for event in agent_service.stream(
+            agent_id=agent_id,
+            message=request.message,
+        ):
+            yield encode_sse(event)
+
+    return StreamingResponse(events(), media_type="text/event-stream")</code></pre>
+
+      <h3>为什么不能只说“因为 FastAPI 快”</h3>
+      <p>框架基准性能只是很小一部分。Agent 请求可能等待模型几十秒，真正决定体验和稳定性的通常是：</p>
+      <ul>
+        <li>是否使用异步 LLM、数据库和 HTTP 客户端；</li>
+        <li>超时、取消、重试和幂等是否正确；</li>
+        <li>是否限制每个租户和下游服务的并发；</li>
+        <li>断线后能否恢复，流式输出是否有背压；</li>
+        <li>会话、checkpoint 和运行状态是否持久化；</li>
+        <li>是否能追踪每一步模型与工具调用的耗时、token、错误和成本。</li>
+      </ul>
+
+      <div class="warn"><strong>FastAPI 不负责什么：</strong>进程内 <code>BackgroundTasks</code> 不等于可靠任务队列；Web 进程重启后任务可能丢失。分钟级或需要重试恢复的 Agent run，通常应交给 Celery、Dramatiq、Temporal 等外部 worker/工作流系统，状态放数据库或专门的 checkpoint store。</div>
+    </section>
+
+    <section id="design">
+      <h2>04 · 面试设计题：如何设计一个 FastAPI Agent 服务？</h2>
+      <h3>回答框架</h3>
+      <ol>
+        <li><strong>接口层：</strong>创建 run、查询状态、取消 run、SSE/WebSocket 订阅事件。</li>
+        <li><strong>编排层：</strong>维护模型调用、工具调用、循环上限、超时和状态机。</li>
+        <li><strong>执行层：</strong>短请求可在 Web worker 中执行；长任务投递到可靠 worker。</li>
+        <li><strong>状态层：</strong>run、message、tool result、checkpoint 放外部存储，不依赖单个进程内存。</li>
+        <li><strong>治理层：</strong>认证、租户隔离、限流、预算、幂等键、工具权限与人工确认。</li>
+        <li><strong>可观测性：</strong>trace 串起 HTTP → model → retrieval → tool；记录耗时、token、成本和错误类别。</li>
+      </ol>
+
+      <h3>线程、协程和进程怎么组合</h3>
+      <table>
+        <thead><tr><th>工作</th><th>放在哪里</th></tr></thead>
+        <tbody>
+          <tr><td>异步调用 LLM、HTTP、异步数据库</td><td>事件循环中的协程</td></tr>
+          <tr><td>暂时无法替换的同步 SDK</td><td>受限线程池，避免阻塞事件循环</td></tr>
+          <tr><td>文档解析、重排序、纯 Python 计算</td><td>进程池或独立 worker，按实测决定</td></tr>
+          <tr><td>本地 GPU 模型推理</td><td>专门推理服务，不与 Web worker 混在一起</td></tr>
+          <tr><td>分钟级、需恢复的 Agent 工作流</td><td>可靠任务队列或 durable workflow 引擎</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="compare">
+      <h2>05 · 对比速查</h2>
+      <table>
+        <thead><tr><th></th><th>多线程</th><th>asyncio</th><th>多进程</th></tr></thead>
+        <tbody>
+          <tr><td>调度者</td><td>操作系统抢占式调度</td><td>协程在 <code>await</code> 处协作让出</td><td>操作系统调度独立进程</td></tr>
+          <tr><td>内存</td><td>共享进程内存</td><td>同一进程内共享</td><td>默认隔离，通信成本较高</td></tr>
+          <tr><td>典型优势</td><td>接入同步阻塞库较方便</td><td>大量 I/O、高连接数、低切换开销</td><td>CPU 并行、故障隔离</td></tr>
+          <tr><td>主要风险</td><td>锁、竞态、线程开销、GIL</td><td>阻塞事件循环、取消与背压复杂</td><td>启动和 IPC 成本、状态同步复杂</td></tr>
+          <tr><td>Agent 中用途</td><td>包裹遗留同步 SDK</td><td>主流网络编排路径</td><td>CPU 任务和独立 worker</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="recite">
+      <h2>06 · 地铁背诵版</h2>
+      <h3>GIL</h3>
+      <div class="answer">常规 CPython 同一进程里，同一时刻通常只有一个线程执行 Python 字节码。它主要限制纯 Python CPU 任务的多线程并行，不妨碍 I/O 并发，也不等于线程安全。I/O 用 asyncio 或线程，CPU 用多进程或独立计算服务。</div>
+      <h3>事件循环</h3>
+      <div class="answer">协程运行到真正需要等待的 await 时主动让出，事件循环去运行其他就绪任务；I/O 完成后再恢复原任务。它解决的是大量 I/O 等待的并发效率，不会自动加速 CPU 计算。</div>
+      <h3>FastAPI + Agent</h3>
+      <div class="answer">Agent 服务要等待 LLM、数据库和工具，还需要流式输出。FastAPI 的 ASGI 异步模型、Streaming/WebSocket、Pydantic 和 OpenAPI 很匹配。但它只是接入层，可靠长任务、状态、限流、重试和 CPU 计算还需要外部组件。</div>
+      <h3>一句话串联</h3>
+      <blockquote><p>Agent 大多在等 I/O，所以事件循环比堆线程更轻；FastAPI 把异步与流式能力暴露成服务；遇到 CPU 密集工作时，再考虑 GIL 并把计算移到进程或独立 worker。</p></blockquote>
+    </section>
+
+    <section id="questions">
+      <h2>07 · 高频追问</h2>
+      <details open><summary>asyncio 是单线程，为什么还能处理高并发？</summary><div>因为高并发请求的大部分时间在等待 I/O。一个任务等待时主动让出，同一线程就能推进其他任务。它提高的是等待阶段的利用率，不是单个请求的 CPU 执行速度。</div></details>
+      <details><summary>async def 里面调用 requests 会怎样？</summary><div><code>requests</code> 是同步阻塞客户端，会卡住事件循环。优先换成异步客户端；无法替换时用受限线程池或 <code>asyncio.to_thread()</code>，并监控线程池饱和。</div></details>
+      <details><summary>用了 asyncio 就完全不需要线程了吗？</summary><div>不是。遗留同步 SDK、部分文件操作仍可能通过线程池承接。关键是不要让它们阻塞事件循环，并设置线程数和下游并发上限。</div></details>
+      <details><summary>FastAPI 的 async 接口一定比 def 快吗？</summary><div>不一定。只有内部使用真正的非阻塞 awaitable 才能发挥优势。同步路径可由框架放入线程池；CPU 密集代码无论写成 async 还是 def 都需要另行隔离。</div></details>
+      <details><summary>一个 Agent 请求需要运行十分钟，直接保持 HTTP 连接可以吗？</summary><div>可以流式保持，但可靠性通常不足。更稳妥的是创建 run 后返回 ID，由 durable worker 执行，客户端通过 SSE/WebSocket 或轮询订阅；服务重启、断线和重试后仍能从持久化 checkpoint 恢复。</div></details>
+      <details><summary>如何防止一次请求并发调用几十个工具压垮下游？</summary><div>在全局、租户、模型和具体工具等层级设置 Semaphore 或限流器，并配置连接池、超时、预算、队列长度和背压。并发不是越大越好，应由下游容量和延迟目标决定。</div></details>
+      <details><summary>Agent 服务怎样做到幂等？</summary><div>让客户端提供 idempotency key，服务端持久化 key 与 run/result 的绑定；重试时返回原 run 或结果。工具调用还要按业务语义单独设计幂等，不能只保证 HTTP 接口不重复创建任务。</div></details>
+      <details><summary>GIL 会不会成为 FastAPI Agent 服务的瓶颈？</summary><div>典型外部 LLM 编排主要受网络等待、下游限流和连接池影响，GIL 通常不是第一瓶颈。如果服务在本地做大量解析、压缩、重排序或纯 Python 计算，则需要 profiling，并把 CPU 工作移出 Web 事件循环和进程。</div></details>
+    </section>
+
+    <section id="java-rag">
+      <h2>08 · Java：现有 Spring Boot RAG 服务怎么对接大模型 Agent？</h2>
+
+      <h3>30 秒面试回答</h3>
+      <div class="answer">如果 Spring Boot 已经实现了 RAG，我通常不会把整套 RAG 逻辑重新塞进 Agent，而是把它封装成一个边界清楚的检索 Tool。Agent 根据用户问题决定何时调用，Spring Boot 负责权限过滤、向量检索、重排和返回带来源的 chunks，Agent 再结合结果生成答案。检索这一步在业务语义上是同步依赖，因为 Agent 拿不到结果就无法继续推理；但在程序实现上，我会优先使用非阻塞异步 HTTP。面向用户，普通问答使用 SSE 流式响应；需要多轮工具调用、耗时长或必须可恢复的任务，则采用异步 run：先返回 runId，后台执行，再通过 SSE、轮询或回调获取进度和结果。</div>
+
+      <h3>先确定谁是编排者</h3>
+      <p>“Spring Boot 对接 Agent”实际上有两种方向，不能一上来只讨论 HTTP 客户端。</p>
+      <table>
+        <thead><tr><th>模式</th><th>调用方向</th><th>适合场景</th></tr></thead>
+        <tbody>
+          <tr><td><strong>RAG 作为 Agent Tool（推荐起点）</strong></td><td><code>Agent → Spring Boot RAG</code></td><td>已经有独立 Agent 编排层；Java 服务拥有文档、权限和检索逻辑。</td></tr>
+          <tr><td><strong>Spring Boot 作为业务入口</strong></td><td><code>Client → Spring Boot → Agent</code></td><td>Java 服务负责用户、会话、鉴权和业务接口，Agent 是下游能力。</td></tr>
+          <tr><td><strong>Spring Boot 内嵌 Agent</strong></td><td>Java 进程内完成模型与工具编排</td><td>团队希望统一 Java 技术栈，可使用 Spring AI、LangChain4j 或自研编排。</td></tr>
+        </tbody>
+      </table>
+      <div class="note"><strong>对“现有 RAG 服务”最自然的改造：</strong>先把它作为 Tool 保留。Agent 管“什么时候检索、是否继续调用其他工具”，Spring Boot 管“去哪里检索、权限怎么算、返回哪些可靠证据”。这样领域边界清楚，也避免复制知识库逻辑。</div>
+
+      <h3>推荐架构：把 RAG 暴露成检索工具</h3>
+      <div class="flow"><span>用户问题</span><i>→</i><span>Agent 判断是否检索</span><i>→</i><span>调用 RAG Tool</span><i>→</i><span>Spring Boot 鉴权 + 检索 + 重排</span><i>→</i><span>返回 chunks + sources</span><i>→</i><span>Agent 生成答案</span></div>
+      <p>工具接口建议返回“证据”，而不是直接返回一段已经生成好的最终答案。否则 Agent 很难判断来源、做多工具融合或控制引用。</p>
+      <pre><code>POST /internal/rag/search
+Authorization: Bearer &lt;service-token&gt;
+Idempotency-Key: &lt;optional-key&gt;
+
+{
+  "query": "退款失败后订单是什么状态？",
+  "tenantId": "tenant-001",
+  "userId": "user-123",
+  "topK": 8,
+  "filters": {"product": "order", "visibility": "internal"}
+}
+
+{
+  "chunks": [
+    {
+      "content": "……",
+      "documentId": "doc-88",
+      "title": "订单退款规则",
+      "sourceUrl": "https://…",
+      "score": 0.91,
+      "metadata": {"version": "2026-08"}
+    }
+  ],
+  "traceId": "trace-abc",
+  "retrievalVersion": "rag-v3"
+}</code></pre>
+
+      <h3>同步还是异步？先拆成三层</h3>
+      <p>面试里最容易答错，是把“业务步骤是否要等结果”“Java 代码是否阻塞线程”“HTTP 是否立即返回结果”混成同一个概念。</p>
+      <table>
+        <thead><tr><th>层次</th><th>推荐判断</th><th>解释</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Agent → RAG 的业务依赖</strong></td><td>通常逻辑同步</td><td>Agent 必须拿到检索结果才能继续生成；代码里表现为 <code>await</code>、<code>Mono</code> 或 Future，并不等于阻塞线程。</td></tr>
+          <tr><td><strong>Java HTTP 客户端实现</strong></td><td>高并发/流式优先非阻塞异步</td><td>WebClient 能在等待 Agent、模型或 RAG 时释放线程；低并发内部服务使用同步客户端也可以，先看复杂度和容量。</td></tr>
+          <tr><td><strong>面向用户的 API 协议</strong></td><td>按任务时长选择</td><td>短任务同步返回；交互问答多用 SSE 流式；长任务使用 runId 异步任务模式。</td></tr>
+        </tbody>
+      </table>
+
+      <h3>三种调用方式怎么选</h3>
+      <table>
+        <thead><tr><th>方式</th><th>接口形态</th><th>适用范围</th><th>注意点</th></tr></thead>
+        <tbody>
+          <tr><td>同步请求/响应</td><td><code>POST /chat</code> 直接返回 JSON</td><td>单次 RAG、耗时短、无需中间进度</td><td>设置整体和下游超时；连接断开会影响体验。</td></tr>
+          <tr><td>SSE 流式响应</td><td><code>POST /chat/stream</code> 返回 token/event</td><td>在线问答、逐步展示模型输出和工具状态</td><td>处理断线、取消、心跳、代理缓冲和背压。</td></tr>
+          <tr><td>异步任务</td><td><code>POST /runs → 202 + runId</code></td><td>多轮 Agent、报告生成、批量检索、分钟级任务</td><td>需要任务队列、状态机、幂等、持久化、重试、查询和取消接口。</td></tr>
+        </tbody>
+      </table>
+      <div class="note"><strong>实战推荐：</strong>在线聊天默认用 SSE，但同时把每次执行建模为 run 并持久化。这样正常情况实时流式返回，客户端断线后仍能凭 runId 查询或恢复，而不是把可靠性押在一条 HTTP 长连接上。</div>
+
+      <h3>Spring Boot 调 Agent：WebClient 流式示例</h3>
+      <pre><code>@Service
+public class AgentClient {
+    private final WebClient webClient;
+
+    public AgentClient(WebClient.Builder builder) {
+        this.webClient = builder.baseUrl("http://agent-service").build();
+    }
+
+    public Flux&lt;ServerSentEvent&lt;String&gt;&gt; stream(AgentRequest request) {
+        return webClient.post()
+            .uri("/agents/order-assistant/runs/stream")
+            .bodyValue(request)
+            .retrieve()
+            .bodyToFlux(new ParameterizedTypeReference&lt;&gt;() {});
+    }
+}</code></pre>
+      <p>如果 Controller 也返回 <code>Flux</code>，数据可以边到边转发，不需要先把完整结果放进内存。生产环境还要补充连接超时、响应超时、重试条件、最大响应大小、trace header 和客户端断开后的取消传播。</p>
+
+      <h3>Spring MVC、WebFlux 怎么选</h3>
+      <ul>
+        <li><strong>现有项目是 Spring MVC：</strong>不必为了“接 Agent”强行全量改成 WebFlux。低到中等并发可使用同步客户端；流式接口也可用 <code>SseEmitter</code>。如果大量长连接和外部等待成为瓶颈，再基于压测演进。</li>
+        <li><strong>大量 SSE、WebSocket 或 I/O fan-out：</strong>WebFlux + WebClient 更自然，但要求整条主要调用链避免同步阻塞。</li>
+        <li><strong>Java 虚拟线程：</strong>可以降低阻塞式 I/O 的线程成本，让同步代码保持直观；但不会让下游变快，也不能替代限流、超时、背压和可靠任务系统。</li>
+        <li><strong><code>@Async</code>：</strong>只是把工作提交到另一个线程池，不等于非阻塞 I/O，也不等于可靠异步任务。进程重启、队列满和任务重试仍需额外设计。</li>
+      </ul>
+
+      <h3>接口契约里必须考虑什么</h3>
+      <ul>
+        <li><strong>权限上下文：</strong>tenant、user、角色和文档 ACL 必须传入 RAG，并在服务端强制过滤，不能只靠 Prompt。</li>
+        <li><strong>来源与版本：</strong>返回 documentId、source、score、文档版本和检索策略版本，方便引用与复现。</li>
+        <li><strong>超时预算：</strong>区分整个 run、单次模型和单个工具的 timeout；不要无限重试。</li>
+        <li><strong>幂等：</strong>创建 run 和有副作用的 Tool 分别设计 idempotency key。</li>
+        <li><strong>可观测性：</strong>统一 traceId，串联 Spring Boot、Agent、LLM、向量库和工具调用。</li>
+        <li><strong>防提示词注入：</strong>检索文档是不可信输入；工具权限、参数校验和副作用确认必须在代码层实现。</li>
+      </ul>
+
+      <h3>什么时候不该让 Agent 直接调用 RAG？</h3>
+      <p>如果每个请求都必须检索、流程固定且不需要 Agent 决策，普通的 RAG pipeline 可能更简单：<code>query → retrieve → rerank → prompt → answer</code>。只有需要动态决定是否检索、改写查询、调用多个知识源或工具、根据中间结果继续推理时，Agent 编排才真正有价值。</p>
+
+      <div class="warn"><strong>面试加分点：</strong>不要回答“统一用异步，因为性能高”。更好的说法是：RAG 对 Agent 通常是一个必须等待的逻辑同步步骤；代码实现可以非阻塞；用户协议则根据时长选择 JSON、SSE 或 runId 异步任务。三层含义不同。</div>
+
+      <h3>地铁背诵版</h3>
+      <div class="answer">现有 Spring Boot RAG 最适合封装成 Agent Tool：Java 服务负责权限、检索和重排，返回带来源的 chunks；Agent 负责决定何时调用以及如何组织答案。Agent 调 RAG 在业务上要等结果，所以是逻辑同步，但网络实现可以用 WebClient 非阻塞。短问答直接同步，聊天用 SSE，长时间多步骤任务用 runId + 后台 worker。不要把 @Async 当成可靠任务队列，也不要为了异步强行把整个 Spring MVC 项目改成 WebFlux。</div>
+    </section>
+
+    <section id="redis-agent">
+      <h2>09 · Redis 在 Agent 系统里能做什么？</h2>
+
+      <h3>30 秒面试回答</h3>
+      <div class="answer">Redis 在 Agent 系统里适合承载高频访问、允许过期、需要原子操作的热状态，例如会话上下文缓存、运行状态、限流计数、并发租约、幂等键、短期工具结果缓存和流式事件。以会话为例，我会把最近消息、摘要、当前 run 和 TTL 放 Redis，完整消息和审计记录仍落数据库；以限流为例，不只限制请求次数，还会按用户、租户、模型分别限制 RPM、TPM 和并发 run，并使用 Lua 脚本保证判断与扣减原子执行。Redis 是高速协调层，不应该默认成为所有长期记忆的唯一事实源。</div>
+
+      <h3>Agent 系统中的常见用途</h3>
+      <table>
+        <thead><tr><th>用途</th><th>例子</th><th>为什么适合 Redis</th></tr></thead>
+        <tbody>
+          <tr><td>会话热上下文</td><td>最近 N 条消息、滚动摘要、当前工具状态</td><td>读写频繁、低延迟、天然适合 TTL。</td></tr>
+          <tr><td>运行状态与 checkpoint</td><td><code>queued/running/waiting_tool/completed</code></td><td>前端频繁查询；可配合数据库保存耐久事实。</td></tr>
+          <tr><td>请求与 Token 限流</td><td>用户 RPM、租户 TPM、模型 QPS</td><td><code>INCR</code>、ZSET 和 Lua 支持原子计数。</td></tr>
+          <tr><td>并发控制</td><td>单租户最多 10 个活跃 run</td><td>带过期租约可防 worker 异常造成永久占位。</td></tr>
+          <tr><td>幂等与去重</td><td>同一 <code>Idempotency-Key</code> 只创建一个 run</td><td><code>SET NX EX</code> 可原子占位并自动过期。</td></tr>
+          <tr><td>结果与语义缓存</td><td>相同检索条件、Embedding 或工具查询短期复用</td><td>降低下游延迟和费用，但必须纳入权限与版本。</td></tr>
+          <tr><td>事件分发</td><td>token、tool_started、tool_finished、error</td><td>Pub/Sub 适合在线广播；Streams 适合需要确认和一定保留的消费。</td></tr>
+          <tr><td>分布式协调</td><td>避免同一会话被两个 worker 同时推进</td><td>可使用租约锁，但必须设计超时、续租和 fencing。</td></tr>
+        </tbody>
+      </table>
+
+      <div class="warn"><strong>边界：</strong>Redis 很快，但内存昂贵且数据可能因淘汰、过期或故障丢失。完整聊天记录、合规审计、计费流水、关键 checkpoint 通常还要落 PostgreSQL/MySQL 或其他持久化存储；长期语义记忆通常进入向量库或带向量能力的持久化系统。</div>
+
+      <h3>例一：Redis 怎么存会话上下文？</h3>
+      <p>先区分三种数据，不要把“Agent memory”全部塞进一个 JSON：</p>
+      <table>
+        <thead><tr><th>数据</th><th>建议位置</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>最近对话与当前运行状态</td><td>Redis 热缓存</td><td>组装 Prompt 时频繁读取，设置空闲 TTL。</td></tr>
+          <tr><td>完整消息、工具调用、审计记录</td><td>关系数据库/持久化日志</td><td>用于恢复、审计和问题复现，是耐久事实源。</td></tr>
+          <tr><td>跨会话长期记忆和知识</td><td>数据库 + 向量索引</td><td>经过抽取、授权和生命周期治理后检索，不应无限拼进 Prompt。</td></tr>
+        </tbody>
+      </table>
+
+      <h4>推荐 Key 设计</h4>
+      <pre><code># 会话元数据：Hash
+agent:session:{tenantId}:{sessionId}:meta
+  user_id       = u-123
+  agent_id      = order-assistant
+  summary       = 用户正在处理订单 O-88 的退款问题……
+  summary_seq   = 120
+  active_run_id = run-456
+  version       = 19
+
+# 最近消息：List 或 Stream
+agent:session:{tenantId}:{sessionId}:messages
+  [{seq:121, role:"user", content:"……"},
+   {seq:122, role:"assistant", content:"……"}]
+
+# 单次运行热状态：Hash
+agent:run:{tenantId}:{runId}
+  status       = waiting_tool
+  current_step = search_order
+  updated_at   = 1788200000
+
+# 建议：会话空闲 24 小时过期，run 按业务保留 1～24 小时
+EXPIRE agent:session:{tenantId}:{sessionId}:meta 86400
+EXPIRE agent:session:{tenantId}:{sessionId}:messages 86400</code></pre>
+
+      <h4>一次请求如何读取和写入</h4>
+      <div class="flow"><span>校验 tenant/user</span><i>→</i><span>读取 summary + 最近消息</span><i>→</i><span>按 token 预算裁剪</span><i>→</i><span>调用 Agent</span><i>→</i><span>持久化完整事件</span><i>→</i><span>更新 Redis 热窗口</span></div>
+      <ol>
+        <li>用 <code>tenantId + sessionId</code> 构造 Key，先验证用户是否有权访问，不能只凭客户端传来的 sessionId。</li>
+        <li>读取滚动摘要和最近若干消息，按 token 预算组装，而不是固定取“最近 20 条”。</li>
+        <li>新消息先写耐久存储或可靠事件流，再更新 Redis；不能因 Redis 更新成功就认为消息已永久保存。</li>
+        <li>消息过长时异步生成新摘要，并用 <code>version</code> 或 CAS/Lua 防止并发请求互相覆盖。</li>
+        <li>每次访问刷新空闲 TTL；删除会话时同时清理关联 Key，或使用统一前缀和索引管理。</li>
+      </ol>
+
+      <h4>为什么要“摘要 + 最近消息”</h4>
+      <p>假设一个会话已有 500 条消息，全部送给模型会增加 token 成本、延迟并稀释注意力。可以保留：</p>
+      <ul>
+        <li><strong>稳定事实摘要：</strong>用户目标、已确认约束、关键业务实体；</li>
+        <li><strong>最近消息窗口：</strong>保留当前语境和指代关系；</li>
+        <li><strong>按需检索记忆：</strong>历史细节需要时再从持久化消息或向量索引取回。</li>
+      </ul>
+      <div class="wrong"><strong>常见错误：</strong>只用 <code>sessionId</code> 做 Key 导致跨租户碰撞；把完整会话永远放 Redis；每次把所有历史消息塞进 Prompt；并发更新摘要时没有版本控制；Redis 淘汰后无法从数据库恢复。</div>
+
+      <h3>例二：Agent 系统怎么做限流？</h3>
+      <p>Agent 的成本不仅是“请求数”。一次请求可能循环调用多次模型和工具，因此至少考虑四个维度：</p>
+      <table>
+        <thead><tr><th>维度</th><th>Key 示例</th><th>保护对象</th></tr></thead>
+        <tbody>
+          <tr><td>请求频率 RPM</td><td><code>rl:rpm:{tenant}:{user}:{minute}</code></td><td>防止接口被突发请求打满。</td></tr>
+          <tr><td>Token 配额 TPM</td><td><code>rl:tpm:{tenant}:{model}</code></td><td>控制模型吞吐和费用。</td></tr>
+          <tr><td>活跃 run 并发</td><td><code>rl:concurrent:{tenant}</code></td><td>限制同时执行的长任务。</td></tr>
+          <tr><td>工具级 QPS</td><td><code>rl:tool:{tenant}:{tool}</code></td><td>保护数据库、搜索、支付等具体下游。</td></tr>
+        </tbody>
+      </table>
+
+      <h4>方案 A：固定窗口，简单但有边界突刺</h4>
+      <pre><code>-- KEYS[1] = rl:rpm:{tenant}:{user}:202609011230
+-- ARGV[1] = limit, ARGV[2] = ttlSeconds
+local current = redis.call('INCR', KEYS[1])
+if current == 1 then
+  redis.call('EXPIRE', KEYS[1], ARGV[2])
+end
+if current &gt; tonumber(ARGV[1]) then
+  return {0, current}
+end
+return {1, current}</code></pre>
+      <p>判断和设置 TTL 必须放在同一个 Lua 脚本里，否则应用在 <code>INCR</code> 后崩溃可能留下永不过期的 Key。固定窗口实现便宜，但用户可以在两个窗口交界处瞬间打出接近两倍流量。</p>
+
+      <h4>方案 B：滑动窗口，频率更准确</h4>
+      <p>用 ZSET 保存最近窗口内的请求时间戳，并在 Lua 中原子执行：</p>
+      <pre><code>1. ZREMRANGEBYSCORE key 0 (now - window)
+2. ZCARD key
+3. 如果 count &gt;= limit：拒绝并返回 retryAfter
+4. 否则 ZADD key now uniqueRequestId
+5. EXPIRE key window + buffer</code></pre>
+      <p>它比固定窗口平滑，但每次请求都需要维护成员，内存和操作成本更高。大规模系统也可使用近似滑动窗口或网关限流。</p>
+
+      <h4>方案 C：Token Bucket，适合模型 Token 和突发流量</h4>
+      <p>Bucket 保存 <code>tokens</code> 和 <code>last_refill_time</code>。每次请求根据经过时间补充 token，再尝试扣减。Lua 保证“补充、判断、扣减”原子完成。</p>
+      <div class="note"><strong>LLM Token 的特殊处理：</strong>请求前只能估算输出 token。可以先按“输入 token + max_output_tokens”预占额度，请求完成后按实际 usage 结算并返还差额。流式请求中也可以定期结算，防止长输出突破预算。</div>
+
+      <h4>并发 run：用带租约的信号量</h4>
+      <p>不能简单 <code>INCR</code> 后等任务结束再 <code>DECR</code>，因为 worker 崩溃会永久占用名额。更稳妥的是使用 ZSET：</p>
+      <pre><code># member = runId, score = leaseExpireAt
+1. 删除 score &lt; now 的过期 run
+2. 检查 ZCARD 是否小于并发上限
+3. 允许则加入 runId 和租约到期时间
+4. worker 运行期间续租，完成或取消时删除
+
+# 上述 1～3 步必须在 Lua 中原子执行</code></pre>
+
+      <h3>Spring Boot 中的调用位置</h3>
+      <div class="flow"><span>认证</span><i>→</i><span>限流 Lua</span><i>→</i><span>创建/恢复 run</span><i>→</i><span>Agent 执行</span><i>→</i><span>实际 Token 结算</span><i>→</i><span>释放并发租约</span></div>
+      <ul>
+        <li>通用 HTTP RPM 可以放在 API Gateway；租户、模型、工具和 token 规则通常更懂业务，应放在 Agent 服务内部。</li>
+        <li>限流返回 <code>429</code>，附带 <code>Retry-After</code>、limit、remaining 和 reset 时间，便于客户端退避。</li>
+        <li>限流 key 需要散列用户或租户标识，避免把手机号等敏感信息直接暴露在 Redis 运维界面。</li>
+        <li>Redis 异常时选择 fail-open 还是 fail-closed 要按风险决定：普通聊天可降级，付费额度和高风险工具通常宁可拒绝。</li>
+      </ul>
+
+      <h3>会话和限流结合的完整例子</h3>
+      <p>用户向订单 Agent 提问时：</p>
+      <ol>
+        <li>网关检查用户基础 RPM；Agent 服务检查租户 TPM 和活跃 run 数。</li>
+        <li>通过后，用幂等键创建 run，并从 Redis 加载会话摘要和最近消息。</li>
+        <li>Agent 调用 RAG 和订单工具；每种工具还有独立并发和 QPS 限制。</li>
+        <li>SSE 持续推送事件，同时将完整消息和工具调用写入数据库。</li>
+        <li>完成后更新 Redis 会话热窗口、结算实际 token、释放 run 租约。</li>
+        <li>若连接断开，run 状态仍可通过数据库或可靠 worker 恢复，Redis 只负责快速查询和协调。</li>
+      </ol>
+
+      <h3>地铁背诵版</h3>
+      <div class="answer">Redis 在 Agent 系统里主要做热状态和分布式协调：会话上下文缓存、run 状态、限流、并发租约、幂等和短期缓存。会话一般保存滚动摘要加最近消息并设置 TTL，完整记录仍落数据库。限流不能只看请求数，还要按用户和租户控制 RPM、模型 TPM、活跃 run 和工具 QPS；判断与扣减用 Lua 保证原子性，长任务的并发名额要使用可过期、可续租的租约。Redis 是高速协调层，不是所有长期记忆的唯一事实源。</div>
+    </section>
+
+    <section id="log">
+      <h2>更新记录</h2>
+      <table><tbody>
+        <tr><td>2026-09-01</td><td>加入 Redis 在 Agent 系统中的用途；详细设计会话热上下文、滚动摘要、RPM/TPM/并发/工具限流及 Lua 原子操作。</td></tr>
+        <tr><td>2026-09-01</td><td>加入 Spring Boot RAG 对接 Agent：架构边界、同步/异步三层判断、JSON/SSE/runId 选型、WebClient 示例与安全治理。</td></tr>
+        <tr><td>2026-09-01</td><td>创建文档；加入 GIL、asyncio 事件循环、FastAPI 适合 Agent 服务的原因与系统设计追问。</td></tr>
+      </tbody></table>
+      <p class="footer">后续新增 Python、FastAPI、并发、分布式系统和 Agent 工程面试题时，继续追加到本文件。</p>
+    </section>
+  </main>
+</div>
+</body>
+</html>

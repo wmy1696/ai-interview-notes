@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#103f39">
+  <title>AI Coding 面试背诵版</title>
+  <style>
+    :root{--bg:#f4f3ee;--paper:#fffefa;--ink:#1b2421;--muted:#65716c;--brand:#0d6558;--deep:#103f39;--soft:#e4f2ee;--accent:#d35f37;--accentsoft:#fff0e9;--line:#d9ded8}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.72 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}main{max-width:680px;margin:auto;padding:0 14px 80px}.hero{margin:0 -14px 18px;padding:44px 24px 30px;background:linear-gradient(145deg,var(--deep),var(--brand));color:#fff}.eyebrow{font-size:11px;letter-spacing:.15em;color:#bde4da}.hero h1{margin:8px 0 12px;font-size:35px;line-height:1.14;letter-spacing:-.04em}.hero p{margin:0;color:#e5f5f1}.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px}.chips span{padding:4px 9px;border:1px solid rgba(255,255,255,.28);border-radius:99px;font-size:11px}
+    nav{display:flex;gap:8px;overflow:auto;margin:0 0 16px;padding:2px 0 8px;scrollbar-width:none}nav a{flex:none;padding:7px 11px;border-radius:99px;background:#fff;color:var(--brand);text-decoration:none;font-size:12px;border:1px solid var(--line)}section{margin:13px 0;padding:21px 19px;border:1px solid var(--line);border-radius:17px;background:var(--paper)}h2{margin:0 0 12px;color:var(--deep);font-size:22px;line-height:1.3}h3{margin:22px 0 7px;font-size:17px}p{margin:8px 0}ul,ol{padding-left:1.25em}li{margin:6px 0}code{padding:.1em .35em;border-radius:5px;background:#edf0eb;color:#91401f;font-size:.9em}.mantra{padding:16px;border-radius:13px;background:var(--deep);color:#fff;font-size:18px;font-weight:730;line-height:1.65}.box{margin:12px 0;padding:14px 15px;border-left:4px solid var(--brand);border-radius:0 11px 11px 0;background:var(--soft)}.warn{border-color:var(--accent);background:var(--accentsoft)}.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:13px 0}.flow b{padding:6px 9px;border-radius:99px;background:var(--soft);color:var(--brand);font-size:12px}.flow i{font-style:normal;color:var(--muted)}.six{display:grid;grid-template-columns:1fr 1fr;gap:8px}.six div{padding:11px;border:1px solid var(--line);border-radius:11px;background:#fff;font-size:13px}.six b{display:block;color:var(--brand);font-size:14px}.script{padding:15px;border-radius:12px;background:#f1f5f2}.script:before{content:"背诵稿";display:block;margin-bottom:5px;color:var(--brand);font-size:11px;font-weight:800;letter-spacing:.1em}details{margin:9px 0;border:1px solid var(--line);border-radius:12px;background:#fff}summary{padding:13px 14px;cursor:pointer;color:var(--deep);font-weight:700;list-style-position:inside}.answer{padding:0 14px 15px;color:#35423e}.answer b{color:var(--brand)}.formula{display:grid;grid-template-columns:76px 1fr;gap:7px;margin:10px 0;font-size:14px}.formula b{color:var(--brand)}.check{list-style:none;padding:0}.check li{padding-left:24px;position:relative}.check li:before{content:"□";position:absolute;left:0;color:var(--brand);font-weight:900}.footer{text-align:center;color:var(--muted);font-size:11px;margin-top:18px}.top{position:fixed;right:14px;bottom:14px;width:42px;height:42px;display:grid;place-items:center;border-radius:50%;background:var(--deep);color:#fff;text-decoration:none;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+    @media(min-width:560px){main{padding-left:20px;padding-right:20px}.hero{margin-left:-20px;margin-right:-20px}.six{grid-template-columns:repeat(3,1fr)}}
+  </style>
+</head>
+<body id="top">
+<main>
+  <header class="hero">
+    <div class="eyebrow">METRO EDITION · 10–15 MIN</div>
+    <h1>AI Coding<br>面试背诵版</h1>
+    <p>这版按面试现场的说话方式整理。记住意思就行，不用逐字背，能自然讲出来最重要。</p>
+    <div class="chips"><span>30 秒自我介绍</span><span>六层体系</span><span>STAR 案例</span><span>高频问答</span></div>
+  </header>
+
+  <nav>
+    <a href="#core">核心</a><a href="#scripts">介绍稿</a><a href="#case">案例</a><a href="#qa">追问</a><a href="#last">临场</a>
+  </nav>
+
+  <section id="core">
+    <h2>一、先背这一句话</h2>
+    <div class="mantra">我不会把一个需求直接扔给 AI，让它自己从头做到尾。我会把需求澄清、任务拆分、写测试、做 Review 这些步骤固定下来。AI 负责干活，我负责方向和质量。</div>
+
+    <h3>五句核心观点</h3>
+    <ol>
+      <li>我把 AI 当成一个<strong>能读代码、改代码、跑命令的工程助手</strong>，但它的输出不是百分之百稳定。</li>
+      <li>能查到的事实让 AI 自己查；<strong>做什么、为什么做，由我决定</strong>。</li>
+      <li>需求太大时，我会拆成几个能单独验收的小任务，<strong>一个任务开一个新会话</strong>。</li>
+      <li>我不靠“相信 Prompt”保证正确，而是靠类型检查、测试、实际运行和人工验收。</li>
+      <li>AI 写代码很快，也可能让代码越来越乱，所以架构和代码质量还是要持续管。</li>
+    </ol>
+
+    <h3>六层体系</h3>
+    <div class="six">
+      <div><b>① 对齐</b>Grilling<br>领域语言</div>
+      <div><b>② 规格</b>Spec<br>User Stories</div>
+      <div><b>③ 切片</b>Tracer Bullet<br>任务图</div>
+      <div><b>④ 实现</b>TDD<br>反馈循环</div>
+      <div><b>⑤ 审查</b>Standards<br>Spec</div>
+      <div><b>⑥ 治理</b>Deep Module<br>安全与协作</div>
+    </div>
+
+    <h3>一条主流程</h3>
+    <div class="flow"><b>对齐</b><i>→</i><b>Spec</b><i>→</i><b>Tickets</b><i>→</i><b>Implement</b><i>→</i><b>TDD</b><i>→</i><b>Review</b><i>→</i><b>QA</b></div>
+  </section>
+
+  <section id="scripts">
+    <h2>二、面试介绍稿</h2>
+    <h3>30 秒版本</h3>
+    <div class="script">我平时不会把需求直接丢给 AI，让它一口气写完。我会先跟它把需求聊清楚，再整理成 Spec，然后拆成几个可以单独开发、单独验收的小任务。每个任务我都会开一个新会话，用测试驱动的方式实现，做完以后再分别检查两件事：代码写得合不合规范，需求有没有漏。这样 AI 确实能帮我提速，但整个过程还是可控的。</div>
+
+    <h3>1 分钟版本</h3>
+    <div class="script">我参考了 Matt Pocock 的这套 Skills，但我不会把它理解成一堆 Prompt。我更愿意把它看成一套 AI 研发流程。比如拿到一个需求，我不会马上让 AI 写代码，而是先让它不断追问，把权限、异常情况、哪些东西不做都聊清楚。能从代码库里查到的信息，让它自己去查；产品上的选择，我来拍板。需求明确以后，我会整理一份 Spec，再拆成几个端到端的小任务。每个任务都尽量能独立测试、独立验收，而且用一个新的 AI 会话来做。开发时我会先确定测试边界，先写一个失败测试，再写最少的代码让它通过。最后我会从两个角度做 Review：第一是代码是否符合项目规范，第二是有没有真正把需求做完整。简单说，AI 主要负责执行，我负责需求、架构和最终验收。</div>
+
+    <h3>最短记忆口诀</h3>
+    <div class="box"><strong>先把需求聊清楚，再拆小任务；AI 负责实现，测试负责找错；最后我来做 Review 和验收。</strong></div>
+  </section>
+
+  <section id="case">
+    <h2>三、STAR 项目案例</h2>
+    <div class="formula"><b>S 情境</b><span>当时要做一个跨前后端的功能，但需求比较粗，权限、异常情况或者外部 SDK 怎么接都没完全想清楚。</span></div>
+    <div class="formula"><b>T 任务</b><span>我需要尽快交付，但又不能让 AI 随便发挥，最后留下一个不好维护的功能。</span></div>
+    <div class="formula"><b>A 行动</b><span>我先把需求问清楚，有外部未知就先调研或做原型；然后写 Spec、拆小任务，每个任务用新会话和 TDD 完成，最后做代码和需求 Review。</span></div>
+    <div class="formula"><b>R 结果</b><span>讲真实结果：拆了多少任务、加了多少测试、用了多久、Review 找到什么问题、上线后表现怎么样。</span></div>
+
+    <h3>口语化模板</h3>
+    <div class="script">举个我实际做过的例子。当时要做【真实功能】，一开始的需求只有一个大概方向。我没有马上让 AI 开写，而是先让它问我权限怎么控制、异常情况怎么处理、哪些内容这次先不做。代码库里已经存在的模式，就让它自己去查。因为【外部 SDK / UI 状态】还不确定，我又先做了一个【调研 / 小原型】。这些问题都确定以后，我整理了 Spec，再拆成【X】个小任务。每个任务我都用一个新会话做，并且先写失败测试，再做实现。功能做完以后，我先让 AI 检查代码规范和需求完整度，最后自己在浏览器里按不同角色走了一遍。最后的结果是【真实结果】。我觉得这套方式最大的价值，不是 AI 从此不犯错，而是问题会更早暴露，出了问题也很容易回到对应的任务和提交去修。</div>
+
+    <div class="box warn"><strong>必须准备三例：</strong>一个新功能、一个难 Bug、一个架构改进。面试时只讲真实证据。</div>
+  </section>
+
+  <section id="qa">
+    <h2>四、高频追问卡片</h2>
+    <p>先像聊天一样说一遍，再点开看看。不要背术语，先把意思说顺。</p>
+
+    <details><summary>1. 这不就是一套 Prompt 吗？</summary><div class="answer">表面上它确实是一些 Markdown 指令，但真正有价值的不是某句话怎么写，而是整个流程。它会规定什么时候问需求、什么时候拆任务、怎么写测试、怎么做 Review，以及不同会话之间靠什么传递信息。Prompt 只是让 AI 按流程工作，代码到底对不对，还是要靠测试、实际运行和人工验收。</div></details>
+
+    <details><summary>2. 怎么保证 AI 理解正确需求？</summary><div class="answer">其实没法百分之百保证，所以我会设几道防线。第一，开发前让它不断问我，把权限、异常情况和这次不做什么聊清楚。第二，把这些决定整理成 Spec。第三，功能完成后再对照 Spec 检查一遍，看有没有漏做或者自己加戏。这样比写一条很长的 Prompt 靠谱得多。</div></details>
+
+    <details><summary>3. 为什么按纵向切片？</summary><div class="answer">因为如果先把数据库全部写完，再写后端，最后才做页面，到最后才知道它们能不能真正连起来。我更喜欢先做一个最小但完整的功能，哪怕页面和数据都很简单，只要能从头跑到尾。第一步跑通以后，后面再一点点加能力，风险会小很多。</div></details>
+
+    <details><summary>4. 为什么每张 Issue 开新上下文？</summary><div class="answer">AI 的会话越长，里面混进来的探索过程、报错日志和旧结论越多，后面越容易跑偏。我会把真正重要的信息写进 Spec、Issue、测试和提交里，然后每个小任务重新开会话。这样 AI 一上来看到的都是当前任务真正需要的内容。</div></details>
+
+    <details><summary>5. TDD 会不会降低效率？</summary><div class="answer">短期看会多几次测试循环，但 AI 最不缺的就是耐心。先有一个会失败的测试，AI 才知道自己到底要修什么；每做一点就能马上拿到反馈，通常比最后一起调试更省时间。我也不会什么都测，只测最关键的业务边界。</div></details>
+
+    <details><summary>6. Seam 是什么？</summary><div class="answer">可以把 seam 理解成一个稳定的业务入口。外部只通过这个入口使用模块，测试也从这个入口验证结果。只要入口的行为不变，里面怎么重构都不会影响调用方和测试。比如订单模块的“提交订单”接口，就是一个比内部某个私有函数更合适的测试边界。</div></details>
+
+    <details><summary>7. 难 Bug 怎么调？</summary><div class="answer">我不会先盯着代码猜原因，而是先想办法稳定复现，而且最好一条命令几秒钟就能看到失败。能稳定复现以后，再把场景尽量缩小，然后列几个可能原因，一个一个验证。最后先把这个问题变成回归测试，再修代码，修完还要回到最初的真实场景重新验证。</div></details>
+
+    <details><summary>8. 怎么防止 AI 把代码越写越乱？</summary><div class="answer">第一，不给它一次做太大的任务。第二，用类型、测试和 Review 持续反馈。第三，定期看模块是不是太散、接口是不是太复杂。AI 很喜欢照着现有代码模仿，所以代码库本身其实比 Prompt 更能影响它。项目里坏模式越多，AI 复制得越快。</div></details>
+
+    <details><summary>9. Deep module 是什么？</summary><div class="answer">白话讲，就是对外暴露的东西尽量简单，复杂逻辑都收在模块里面。调用方只需要学几个稳定接口，不用了解里面十几个文件。这样修一个问题时，改动也更容易集中在一个地方，而不是到处找调用点。</div></details>
+
+    <details><summary>10. 为什么 Review 要分两个方向？</summary><div class="answer">因为代码写得漂亮，不代表需求做对了；需求做出来了，也不代表代码符合项目规范。所以我会把它拆开看：一个 Reviewer 专门看代码质量和规范，另一个专门对照 Spec 看有没有漏做、做错或者超范围。两份结果分开更清楚。</div></details>
+
+    <details><summary>11. 人和 AI 到底怎么分工？</summary><div class="answer">AI 很适合查代码、看文档、写实现、反复跑测试。人更适合决定做什么、为什么做、用户体验怎么样，以及架构上愿意接受什么取舍。我的原则是：能查的事实让 AI 去查，需要判断和负责的决定由我来做。</div></details>
+
+    <details><summary>12. 如何保证安全？</summary><div class="answer">我不会因为 AI 很方便就把权限全部放开。密钥放环境变量，输出日志先脱敏，危险 Git 命令用 hook 拦截，不可逆操作必须人工确认。如果让它无人值守运行，就放到沙箱里并限制最大执行次数。Git 能恢复代码，但不能代替系统隔离。</div></details>
+
+    <details><summary>13. 什么时候调研，什么时候做原型？</summary><div class="answer">如果我缺的是外部事实，比如某个 SDK 到底支不支持一个能力，就先查官方文档和源码。如果问题是“这个交互用起来怎么样”或者“这个状态设计顺不顺”，光聊文字不够，就先做一个很小的可运行原型，用真实体验来决定。</div></details>
+
+    <details><summary>14. 这套体系有什么缺点？</summary><div class="answer">它不是所有任务都值得完整跑一遍。改一个文案也先写 Spec、拆 Issue，就太重了。另外 Skill 和文档也会过时，测试也可能写得没价值。所以我会按任务大小裁剪流程，并且定期清理已经过期的规则和资料。</div></details>
+
+    <details><summary>15. 怎么衡量 AI Coding 有没有价值？</summary><div class="answer">我不会看 AI 写了多少行代码，因为代码多不代表价值大。我更关注从需求到可验收功能用了多久、返工多少次、Review 找到多少问题、上线以后有没有缺陷，以及我花了多少时间等 AI 或做人工修正。把这些成本一起算，才是真正的 ROI。</div></details>
+  </section>
+
+  <section>
+    <h2>五、八个关键词</h2>
+    <div class="formula"><b>Frontier</b><span>前提已满足、当前可回答或领取的节点。</span></div>
+    <div class="formula"><b>Tracer</b><span>最小但完整的端到端纵向切片。</span></div>
+    <div class="formula"><b>Pointer</b><span>常驻上下文里指向按需材料的触发引用。</span></div>
+    <div class="formula"><b>Seam</b><span>可替换行为的位置，也是公共测试边界。</span></div>
+    <div class="formula"><b>Deep</b><span>小接口隐藏大量行为，提升 leverage 和 locality。</span></div>
+    <div class="formula"><b>Tight loop</b><span>快速、稳定、可自动运行、能对精确问题变红。</span></div>
+    <div class="formula"><b>Fog</b><span>知道有问题，但现在还不能精确表述。</span></div>
+    <div class="formula"><b>Sediment</b><span>过时累积、稀释注意力的 Agent 文档。</span></div>
+  </section>
+
+  <section id="last">
+    <h2>六、面试前 2 分钟临场检查</h2>
+    <ul class="check">
+      <li>先讲业务问题和工程风险，不先报 Skill 名称。</li>
+      <li>强调 AI 会犯错，体系的目标是让错误早暴露。</li>
+      <li>至少说清一个真实功能、Bug 和架构案例。</li>
+      <li>数据只说真实口径，不虚构效率提升。</li>
+      <li>承认开源来源，突出自己的理解、改造和落地。</li>
+      <li>最后落到：人负责判断，Agent 负责吞吐。</li>
+    </ul>
+    <div class="mantra">结尾可以说：我觉得 AI Coding 最有价值的地方，不是少要几个工程师，而是让工程师把时间放在需求、架构和质量判断上，把查代码、写实现、跑测试这些重复工作交给 AI。</div>
+  </section>
+
+  <div class="footer">配套长文：《AI Coding Skills 体系与研发工程师面试准备》</div>
+</main>
+<a class="top" href="#top" aria-label="返回顶部">↑</a>
+</body>
+</html>
