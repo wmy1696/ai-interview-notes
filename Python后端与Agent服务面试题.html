@@ -27,6 +27,7 @@
     <a href="#questions">07 · 高频追问</a>
     <a href="#java-rag">08 · Spring Boot RAG 对接 Agent</a>
     <a href="#redis-agent">09 · Redis 在 Agent 系统中</a>
+    <a href="#mysql-chat-log">10 · MySQL 对话日志索引</a>
     <a href="#log">更新记录</a>
   </nav>
 
@@ -500,9 +501,156 @@ return {1, current}</code></pre>
       <div class="answer">Redis 在 Agent 系统里主要做热状态和分布式协调：会话上下文缓存、run 状态、限流、并发租约、幂等和短期缓存。会话一般保存滚动摘要加最近消息并设置 TTL，完整记录仍落数据库。限流不能只看请求数，还要按用户和租户控制 RPM、模型 TPM、活跃 run 和工具 QPS；判断与扣减用 Lua 保证原子性，长任务的并发名额要使用可过期、可续租的租约。Redis 是高速协调层，不是所有长期记忆的唯一事实源。</div>
     </section>
 
+    <section id="mysql-chat-log">
+      <h2>10 · MySQL 对话日志表量大查询慢，怎么建索引？</h2>
+
+      <h3>30 秒面试回答</h3>
+      <div class="answer">我不会因为表大就先给每个字段加索引，而是先看慢 SQL、访问路径和数据分布，再按高频查询设计联合索引。对话日志最常见的是按租户和会话查询历史，并按时间或递增 ID 排序，所以我通常考虑 <code>(tenant_id, session_id, id)</code>；按用户查询近期记录时考虑 <code>(tenant_id, user_id, created_at, id)</code>；requestId 用于精确追踪时可以建唯一索引。content 这类大 TEXT、完整 JSON，以及 role、deleted、status 等低区分度字段，一般不单独建普通 B+Tree 索引。最后用 EXPLAIN ANALYZE 验证扫描行数和排序，并配合游标分页、冷热归档或分区，不能指望索引解决所有大表问题。</div>
+
+      <h3>第一步不是建索引，而是确认“慢在哪里”</h3>
+      <ol>
+        <li>从慢查询日志或监控找到真实的高频慢 SQL，而不是根据表字段猜。</li>
+        <li>记录查询条件、排序、分页方式、返回列、调用频率和 P95/P99 延迟。</li>
+        <li>用 <code>EXPLAIN ANALYZE</code> 看实际扫描行数、索引选择、回表、排序和执行时间。</li>
+        <li>看字段基数与数据倾斜：一个字段总体区分度高，不代表某个热门租户内仍然高。</li>
+        <li>确认问题是定位慢、排序慢，还是 <code>SELECT *</code> 读取大量 content 导致 I/O 慢。</li>
+      </ol>
+      <div class="note"><strong>核心原则：</strong>索引服务于查询，不服务于字段。先列出系统真正需要支持的 Query Patterns，再为最重要的访问路径设计最少的一组索引。</div>
+
+      <h3>假设表结构</h3>
+      <pre><code>CREATE TABLE conversation_log (
+    id          BIGINT PRIMARY KEY,
+    tenant_id   BIGINT       NOT NULL,
+    session_id  VARCHAR(64)  NOT NULL,
+    user_id     BIGINT       NOT NULL,
+    request_id  VARCHAR(64)  NOT NULL,
+    agent_id    BIGINT       NOT NULL,
+    role        TINYINT      NOT NULL,
+    status      TINYINT      NOT NULL,
+    content     MEDIUMTEXT   NOT NULL,
+    metadata    JSON         NULL,
+    token_count INT          NULL,
+    created_at  DATETIME(3)  NOT NULL,
+    deleted     TINYINT      NOT NULL DEFAULT 0
+);</code></pre>
+      <p>以下索引只是基于典型 SQL 的示例。真实项目必须根据实际 WHERE、ORDER BY、数据量和选择性调整。</p>
+
+      <h3>场景一：查询某个会话的历史消息</h3>
+      <pre><code>SELECT id, role, content, created_at
+FROM conversation_log
+WHERE tenant_id = ?
+  AND session_id = ?
+  AND id &lt; ?
+ORDER BY id DESC
+LIMIT 50;</code></pre>
+      <p>推荐候选索引：</p>
+      <pre><code>CREATE INDEX idx_tenant_session_id
+ON conversation_log (tenant_id, session_id, id);</code></pre>
+      <ul>
+        <li><code>tenant_id</code> 放前面，既符合多租户隔离，也能缩小后续字段的搜索范围。</li>
+        <li><code>session_id</code> 是等值条件，继续定位到单个会话。</li>
+        <li><code>id &lt; lastId ORDER BY id DESC LIMIT 50</code> 同时完成范围过滤与顺序扫描。</li>
+        <li>不要把大字段 <code>content</code> 塞进联合索引追求“覆盖索引”，索引体积和写放大会非常大。</li>
+      </ul>
+      <div class="note"><strong>为什么优先按 id 翻页？</strong>如果 id 是随时间递增的主键，它既是稳定游标，又能避免相同 created_at 带来的顺序不确定。要求严格按业务时间排序时，可使用 <code>(tenant_id, session_id, created_at, id)</code>，其中 id 负责打破时间相同的并列。</div>
+
+      <h3>场景二：查询某用户最近的对话记录</h3>
+      <pre><code>SELECT id, session_id, role, created_at
+FROM conversation_log
+WHERE tenant_id = ?
+  AND user_id = ?
+  AND created_at &gt;= ?
+ORDER BY created_at DESC, id DESC
+LIMIT 50;</code></pre>
+      <p>候选索引：</p>
+      <pre><code>CREATE INDEX idx_tenant_user_time_id
+ON conversation_log (tenant_id, user_id, created_at, id);</code></pre>
+      <p>设计顺序一般是：<strong>高频等值条件 → 范围/排序字段 → 稳定游标</strong>。进入 <code>created_at</code> 范围以后，后面的字段通常不能再像等值前缀那样缩小搜索范围，但 <code>id</code> 仍能帮助稳定排序和游标条件。</p>
+
+      <h3>场景三：通过 requestId 定位一次调用链</h3>
+      <pre><code>SELECT *
+FROM conversation_log
+WHERE tenant_id = ? AND request_id = ?;</code></pre>
+      <p>如果业务上一个租户内 requestId 唯一：</p>
+      <pre><code>CREATE UNIQUE INDEX uk_tenant_request
+ON conversation_log (tenant_id, request_id);</code></pre>
+      <p>唯一索引不仅加速查询，还把“不允许重复写入”变成数据库约束。是否唯一必须由业务语义决定，不能为了性能随便加。</p>
+
+      <h3>场景四：按状态扫描待处理记录</h3>
+      <pre><code>SELECT id, request_id
+FROM conversation_log
+WHERE tenant_id = ?
+  AND status = 1
+  AND created_at &lt; ?
+ORDER BY created_at
+LIMIT 500;</code></pre>
+      <p>如果这是高频后台任务，而且 <code>status = 1</code> 在单个租户内占比很低，可以评估：</p>
+      <pre><code>CREATE INDEX idx_tenant_status_time
+ON conversation_log (tenant_id, status, created_at);</code></pre>
+      <p>这里 <code>status</code> 虽然单独区分度低，但放在租户和时间范围组成的真实访问路径中可能有效。这也说明“低区分度字段不能建索引”不是绝对规则，关键看联合条件下能排除多少行。</p>
+
+      <h3>哪些字段通常不适合直接建普通索引？</h3>
+      <table>
+        <thead><tr><th>字段/情况</th><th>为什么不合适</th><th>更合理做法</th></tr></thead>
+        <tbody>
+          <tr><td><code>content MEDIUMTEXT</code></td><td>内容大，普通 B+Tree 索引体积巨大；前缀索引通常难支持真正的内容搜索。</td><td>关键词检索评估 FULLTEXT；复杂检索使用 Elasticsearch/OpenSearch；语义检索使用向量索引。</td></tr>
+          <tr><td>完整 <code>metadata JSON</code></td><td>JSON 内部结构复杂，给整个对象建普通索引没有明确查询语义。</td><td>把高频查询路径抽成生成列或独立列，再对该列建索引。</td></tr>
+          <tr><td><code>role/status/deleted</code> 单列索引</td><td>值很少、命中行比例高，优化器可能仍选择全表扫描。</td><td>只有出现在高频查询中时，结合 tenant、user/session 和时间设计联合索引。</td></tr>
+          <tr><td>超长随机字符串</td><td>索引占空间大、比较成本高；随机写入还会造成页分裂和缓存局部性差。</td><td>主键优先 BIGINT；必须用 UUID 时评估 BINARY(16) 和时间有序 UUID。</td></tr>
+          <tr><td>高频更新字段</td><td>每次更新都要维护索引，写放大明显。</td><td>只有确实用于关键过滤/排序时才建，必要时把可变状态拆表。</td></tr>
+          <tr><td>几乎不出现在查询条件中的字段</td><td>占用磁盘和 Buffer Pool，却不能减少扫描。</td><td>不要为了“以后可能用”提前建索引。</td></tr>
+        </tbody>
+      </table>
+
+      <h3>JSON 字段的正确索引示例</h3>
+      <p>假设经常通过 <code>metadata.channel</code> 查询，不要索引整个 JSON，可以抽取生成列：</p>
+      <pre><code>ALTER TABLE conversation_log
+ADD COLUMN channel VARCHAR(32)
+    GENERATED ALWAYS AS (
+      JSON_UNQUOTE(JSON_EXTRACT(metadata, '$.channel'))
+    ) STORED,
+ADD INDEX idx_tenant_channel_time
+    (tenant_id, channel, created_at);</code></pre>
+      <p>如果 channel 已经是核心业务维度，直接建普通列通常比长期藏在 JSON 里更清晰。</p>
+
+      <h3>为什么联合索引不能只看“区分度最高的字段放前面”</h3>
+      <p>索引顺序首先要匹配查询形状和最左前缀，而不是机械按基数排序。例如系统永远先限定 tenant，再查 session，那么 <code>(tenant_id, session_id, id)</code> 往往比只考虑全局区分度更符合权限边界和访问路径。</p>
+      <ul>
+        <li><code>(tenant_id, session_id, id)</code> 可以支持 tenant、tenant+session 等最左前缀查询。</li>
+        <li>它不能高效支持只有 <code>session_id</code>、没有 tenant_id 的查询。</li>
+        <li>在范围条件之后，后续列用于继续定位的能力通常会减弱，因此要结合 EXPLAIN 验证。</li>
+        <li>已有 <code>(a,b,c)</code> 后，单独的 <code>(a)</code> 或某些 <code>(a,b)</code> 索引可能冗余，但删除前要检查排序、覆盖和其他 SQL。</li>
+      </ul>
+
+      <h3>索引之外，还必须做什么？</h3>
+      <table>
+        <thead><tr><th>问题</th><th>处理方式</th></tr></thead>
+        <tbody>
+          <tr><td><code>LIMIT 100000, 50</code> 越翻越慢</td><td>改成 Keyset/Cursor Pagination，例如 <code>id &lt; lastId</code>。</td></tr>
+          <tr><td>列表查询也读取大 content</td><td>列表只取摘要和元数据；查看详情时再按主键读取 content，必要时拆冷热列。</td></tr>
+          <tr><td>历史数据无限增长</td><td>制定保留策略，按月归档冷数据；满足条件时再评估时间分区。</td></tr>
+          <tr><td>按会话统计每次都扫日志</td><td>建立 session 汇总表，保存最后消息时间、消息数和摘要。</td></tr>
+          <tr><td>复杂全文/语义搜索</td><td>把 MySQL 作为事实源，异步同步到搜索或向量系统。</td></tr>
+          <tr><td>单表和单实例已到容量瓶颈</td><td>先归档和拆业务表，再根据租户/session 路由评估分库分表，不能一慢就分片。</td></tr>
+        </tbody>
+      </table>
+
+      <h3>写入成本：索引不是越多越好</h3>
+      <p>对话日志通常是高写入表。每增加一个二级索引，INSERT 都要维护一棵 B+Tree，同时消耗磁盘、Buffer Pool 和备份复制带宽。因此我的流程是：</p>
+      <div class="flow"><span>找到 Top 慢 SQL</span><i>→</i><span>设计最少联合索引</span><i>→</i><span>灰度创建</span><i>→</i><span>EXPLAIN ANALYZE</span><i>→</i><span>观察读写指标</span><i>→</i><span>清理冗余索引</span></div>
+      <p>在线大表加索引前还要评估 DDL 算法、锁等待、主从延迟、临时空间和回滚方案。可以先在影子流量或从库验证；支持时也可用 Invisible Index 评估移除某个索引的影响。</p>
+
+      <h3>面试官继续追问：你怎么验证索引真的有效？</h3>
+      <div class="answer">我会用接近生产分布的数据执行 EXPLAIN ANALYZE，对比 rows examined、实际返回行数、是否 filesort、回表次数和总耗时；再观察上线后的慢查询数量、P95/P99、Buffer Pool 命中、CPU、磁盘 I/O、写入延迟和主从延迟。如果扫描下降但写入成本明显上升，或者优化器很少选择该索引，我会重新调整或移除，而不是只看“EXPLAIN 里出现了 key”就结束。</div>
+
+      <h3>地铁背诵版</h3>
+      <div class="answer">大表查询慢，我先看慢 SQL 和 EXPLAIN ANALYZE，再按 WHERE、ORDER BY、LIMIT 设计联合索引。会话历史常用 tenant_id、session_id、id；用户最近记录用 tenant_id、user_id、created_at、id；requestId 有唯一语义时建唯一索引。TEXT、完整 JSON、低区分度状态和 deleted 字段通常不单独建索引。还要避免深 OFFSET、少查大 content、做冷热归档和会话汇总。索引会增加写放大，所以目标是最少的一组高价值索引，而不是每列一个索引。</div>
+    </section>
+
     <section id="log">
       <h2>更新记录</h2>
       <table><tbody>
+        <tr><td>2026-09-02</td><td>加入 MySQL 对话日志大表优化：典型联合索引、游标分页、TEXT/JSON/低区分度字段、冷热归档及 EXPLAIN ANALYZE 验证。</td></tr>
         <tr><td>2026-09-01</td><td>加入 Redis 在 Agent 系统中的用途；详细设计会话热上下文、滚动摘要、RPM/TPM/并发/工具限流及 Lua 原子操作。</td></tr>
         <tr><td>2026-09-01</td><td>加入 Spring Boot RAG 对接 Agent：架构边界、同步/异步三层判断、JSON/SSE/runId 选型、WebClient 示例与安全治理。</td></tr>
         <tr><td>2026-09-01</td><td>创建文档；加入 GIL、asyncio 事件循环、FastAPI 适合 Agent 服务的原因与系统设计追问。</td></tr>
